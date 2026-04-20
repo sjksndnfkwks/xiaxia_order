@@ -1,0 +1,125 @@
+const app = getApp()
+const { col } = require('../../utils/cloud')
+const { getAnniversaryShownKey } = require('../../utils/time')
+
+Page({
+  data: {
+    loading: true,
+    categories: [],
+    itemMap: {},       // { catId: [item,...] }
+    activeCat: '',
+    activeCatId: '',   // scroll-into-view for left sidebar
+    scrollTarget: '',  // scroll-into-view for right list
+
+    // 备注弹窗
+    notePopup: { show: false, itemId: '', itemName: '', note: '' },
+
+    // 纪念日弹窗
+    showAnniversary: false,
+    todayAnniversary: null
+  },
+
+  async onLoad() {
+    await app.waitLogin()
+    this._loadData()
+  },
+
+  onShow() {
+    // 检查是否有待显示的纪念日（每次进入首页时检查）
+    const ann = app.globalData.todayAnniversary
+    if (ann) {
+      const key = getAnniversaryShownKey(ann.date)
+      const shown = wx.getStorageSync(key)
+      if (!shown) {
+        this.setData({ showAnniversary: true, todayAnniversary: ann })
+      }
+    }
+  },
+
+  async _loadData() {
+    try {
+      const [catRes, itemRes] = await Promise.all([
+        col('categories').where({ type: 'food' }).orderBy('createdAt', 'asc').get(),
+        col('items').where({ type: 'food', available: true }).orderBy('sort', 'asc').get()
+      ])
+
+      const categories = catRes.data
+      const items = itemRes.data
+
+      // 按分类分组
+      const itemMap = {}
+      categories.forEach(cat => { itemMap[cat._id] = [] })
+      items.forEach(item => {
+        if (itemMap[item.categoryId]) {
+          itemMap[item.categoryId].push(item)
+        }
+      })
+
+      const activeCat = categories.length > 0 ? categories[0]._id : ''
+      this.setData({ categories, itemMap, activeCat, loading: false })
+
+      // 缓存各section的位置（用于滚动同步）
+      setTimeout(() => this._cacheSectionPositions(), 300)
+    } catch (e) {
+      console.error('load food data error', e)
+      wx.showToast({ title: '加载失败: ' + (e.message || e.errMsg || '未知错误'), icon: 'none', duration: 4000 })
+      this.setData({ loading: false })
+    }
+  },
+
+  _sectionTops: [],
+
+  _cacheSectionPositions() {
+    const { categories } = this.data
+    const ids = categories.map(cat => `#section-${cat._id}`)
+    if (ids.length === 0) return
+
+    const query = wx.createSelectorQuery()
+    ids.forEach(id => query.select(id).boundingClientRect())
+    query.exec(rects => {
+      this._sectionTops = rects.map((r, i) => ({
+        catId: categories[i]._id,
+        top: r ? r.top : 0
+      }))
+    })
+  },
+
+  onFoodScroll(e) {
+    const scrollTop = e.detail.scrollTop
+    // 重新查询各section位置（相对于视口）
+    const { categories } = this.data
+    const query = wx.createSelectorQuery()
+    categories.forEach(cat => query.select(`#section-${cat._id}`).boundingClientRect())
+    query.exec(rects => {
+      let activeCat = categories[0]?._id || ''
+      for (let i = 0; i < rects.length; i++) {
+        if (rects[i] && rects[i].top <= 80) {
+          activeCat = categories[i]._id
+        }
+      }
+      if (activeCat !== this.data.activeCat) {
+        this.setData({ activeCat, activeCatId: `cat-nav-${activeCat}` })
+      }
+    })
+  },
+
+  scrollToCategory(e) {
+    const id = e.currentTarget.dataset.id
+    this.setData({ activeCat: id, scrollTarget: `section-${id}` })
+  },
+
+  onEditNote(e) {
+    const { itemId, name, note } = e.detail
+    this.setData({ notePopup: { show: true, itemId, itemName: name, note } })
+  },
+
+  onNoteClose() {
+    this.setData({ 'notePopup.show': false })
+  },
+
+  onAnniversaryClose() {
+    this.setData({ showAnniversary: false })
+    // 清除globalData，避免再次触发
+    app.globalData.todayAnniversary = null
+  }
+})

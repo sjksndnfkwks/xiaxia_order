@@ -1,0 +1,58 @@
+{
+  "pages": [
+    "pages/food/food",
+    "pages/snacks/snacks",
+    "pages/chat/chat",
+    "pages/profile/profile",
+    "pages/cart/cart",
+    "pages/order-detail/order-detail",
+    "pages/admin/admin-home/admin-home",
+    "pages/admin/admin-menu/admin-menu",
+    "pages/admin/admin-orders/admin-orders",
+    "pages/admin/admin-analytics/admin-analytics",
+    "pages/admin/admin-anniversaries/admin-anniversaries",
+    "pages/admin/admin-categories/admin-categories"
+  ],
+  "tabBar": {
+    "color": "#7B8AC4",
+    "selectedColor": "#6B9FFF",
+    "backgroundColor": "#0D1F6E",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/food/food",
+        "text": "点菜",
+        "iconPath": "assets/icons/tab-food.png",
+        "selectedIconPath": "assets/icons/tab-food-active.png"
+      },
+      {
+        "pagePath": "pages/snacks/snacks",
+        "text": "零食",
+        "iconPath": "assets/icons/tab-snack.png",
+        "selectedIconPath": "assets/icons/tab-snack-active.png"
+      },
+      {
+        "pagePath": "pages/chat/chat",
+        "text": "消息",
+        "iconPath": "assets/icons/tab-chat.png",
+        "selectedIconPath": "assets/icons/tab-chat-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "assets/icons/tab-profile.png",
+        "selectedIconPath": "assets/icons/tab-profile-active.png"
+      }
+    ]
+  },
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#0D1F6E",
+    "navigationBarTitleText": "虾虾的626小食堂",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F2F5FF"
+  },
+  "usingComponents": {},
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

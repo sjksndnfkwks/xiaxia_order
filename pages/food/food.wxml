@@ -1,0 +1,71 @@
+<!-- 纪念日惊喜弹窗 -->
+<anniversary-popup
+  show="{{showAnniversary}}"
+  anniversary="{{todayAnniversary}}"
+  bind:close="onAnniversaryClose"
+/>
+
+<!-- 备注弹窗 -->
+<note-popup
+  show="{{notePopup.show}}"
+  itemId="{{notePopup.itemId}}"
+  itemName="{{notePopup.itemName}}"
+  note="{{notePopup.note}}"
+  bind:close="onNoteClose"
+/>
+
+<!-- 加载中 -->
+<view class="loading-wrap" wx:if="{{loading}}">
+  <text>加载中...</text>
+</view>
+
+<!-- 主体：双栏布局 -->
+<view class="food-container" wx:else>
+  <!-- 左侧分类导航 -->
+  <scroll-view class="cat-sidebar" scroll-y scroll-into-view="{{activeCatId}}">
+    <view
+      wx:for="{{categories}}"
+      wx:key="_id"
+      id="cat-nav-{{item._id}}"
+      class="cat-item {{activeCat === item._id ? 'active' : ''}}"
+      bindtap="scrollToCategory"
+      data-id="{{item._id}}"
+    >
+      <text class="cat-icon">{{item.icon}}</text>
+      <text class="cat-name">{{item.name}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 右侧菜品列表 -->
+  <scroll-view
+    class="food-list"
+    scroll-y
+    scroll-into-view="{{scrollTarget}}"
+    bindscroll="onFoodScroll"
+  >
+    <view
+      wx:for="{{categories}}"
+      wx:key="_id"
+      id="section-{{item._id}}"
+    >
+      <view class="cat-section-title">{{item.icon}} {{item.name}}</view>
+      <view wx:if="{{itemMap[item._id] && itemMap[item._id].length > 0}}">
+        <food-item
+          wx:for="{{itemMap[item._id]}}"
+          wx:for-item="foodItem"
+          wx:key="_id"
+          item="{{foodItem}}"
+          bind:editnote="onEditNote"
+        />
+      </view>
+      <view class="empty-cat" wx:else>
+        <text>暂时没有菜品哦~</text>
+      </view>
+    </view>
+
+    <view style="height: 160rpx;"></view>
+  </scroll-view>
+</view>
+
+<!-- 底部购物车 -->
+<cart-bar />

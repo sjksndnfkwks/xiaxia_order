@@ -1,0 +1,138 @@
+.admin-home {
+  padding: 0 0 40rpx;
+  background: var(--c-bg);
+  min-height: 100vh;
+}
+
+.welcome-banner {
+  background: var(--grad-deep);
+  padding: 60rpx 40rpx 64rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-banner::after {
+  content: '🐾 ✨ 🐾';
+  position: absolute;
+  bottom: 16rpx;
+  right: 24rpx;
+  font-size: 26rpx;
+  opacity: 0.2;
+  letter-spacing: 8rpx;
+}
+
+.welcome-title {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 1rpx;
+}
+
+.welcome-sub {
+  font-size: 28rpx;
+  color: rgba(255,255,255,0.7);
+}
+
+.stats-row {
+  display: flex;
+  gap: 20rpx;
+  padding: 24rpx;
+  margin-top: -28rpx;
+}
+
+.stat-card {
+  flex: 1;
+  background: var(--c-bg-card);
+  border-radius: var(--r-card);
+  padding: 28rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  box-shadow: var(--shadow-float);
+  border: 1rpx solid var(--c-border-light);
+}
+
+.stat-num {
+  font-size: 52rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.pending-num { color: var(--c-accent); }
+.total-num { color: var(--c-primary); }
+.msg-num { color: var(--c-teal); }
+
+.stat-label {
+  font-size: 22rpx;
+  color: var(--c-text-sub);
+  text-align: center;
+}
+
+.menu-card {
+  background: var(--c-bg-card);
+  border-radius: var(--r-card);
+  margin: 0 24rpx 20rpx;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  border: 1rpx solid var(--c-border-light);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 32rpx 28rpx;
+  gap: 24rpx;
+}
+
+.menu-icon { font-size: 48rpx; flex-shrink: 0; }
+
+.menu-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.menu-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--c-text-h);
+}
+
+.menu-desc {
+  font-size: 24rpx;
+  color: var(--c-text-sub);
+}
+
+.menu-arrow {
+  font-size: 40rpx;
+  color: var(--c-border);
+}
+
+.menu-divider {
+  height: 1rpx;
+  background: var(--c-border-light);
+  margin: 0 28rpx;
+}
+
+.subscribe-card {
+  background: var(--c-primary-pale);
+  border-radius: var(--r-card);
+  margin: 0 24rpx;
+  padding: 28rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  box-shadow: var(--shadow-card);
+  border: 2rpx solid var(--c-border);
+}
+
+.sub-icon { font-size: 48rpx; }
+
+.sub-info { flex: 1; }
+.sub-title { font-size: 28rpx; font-weight: 600; color: var(--c-primary); display: block; margin-bottom: 6rpx; }
+.sub-desc { font-size: 22rpx; color: var(--c-text-sub); }

@@ -1,0 +1,77 @@
+<!-- Tab切换 -->
+<view class="tab-bar">
+  <view class="tab-item {{activeTab === 'food' ? 'active' : ''}}" bindtap="switchTab" data-tab="food">🍽 菜品</view>
+  <view class="tab-item {{activeTab === 'snack' ? 'active' : ''}}" bindtap="switchTab" data-tab="snack">🍬 零食</view>
+</view>
+
+<!-- 列表 -->
+<scroll-view class="item-list" scroll-y>
+  <view class="loading-wrap" wx:if="{{loading}}"><text>加载中...</text></view>
+  <view wx:else>
+    <view class="list-item" wx:for="{{items}}" wx:key="_id">
+      <image class="list-img" src="{{item.imageUrl}}" mode="aspectFill" />
+      <view class="list-info">
+        <text class="list-name">{{item.name}}</text>
+        <text class="list-desc" wx:if="{{item.description}}">{{item.description}}</text>
+        <view class="list-tags">
+          <view class="avail-tag {{item.available ? 'on' : 'off'}}">{{item.available ? '上架' : '下架'}}</view>
+        </view>
+      </view>
+      <view class="list-actions">
+        <view class="action-btn edit" bindtap="editItem" data-item="{{item}}">编辑</view>
+        <view class="action-btn toggle" bindtap="toggleAvailable" data-id="{{item._id}}" data-val="{{item.available}}">
+          {{item.available ? '下架' : '上架'}}
+        </view>
+        <view class="action-btn delete" bindtap="deleteItem" data-id="{{item._id}}">删除</view>
+      </view>
+    </view>
+    <view class="empty-tip" wx:if="{{items.length === 0}}">暂无{{activeTab === 'food' ? '菜品' : '零食'}}</view>
+  </view>
+  <view style="height: 160rpx;"></view>
+</scroll-view>
+
+<!-- 新增按钮 -->
+<view class="fab" bindtap="addItem">＋</view>
+
+<!-- 新增/编辑弹窗 -->
+<view class="form-mask" wx:if="{{showForm}}">
+  <view class="form-sheet">
+    <view class="form-header">
+      <text class="form-title">{{editingId ? '编辑' : '新增'}}{{activeTab === 'food' ? '菜品' : '零食'}}</text>
+      <text class="form-close" bindtap="closeForm">✕</text>
+    </view>
+
+    <!-- 图片上传 -->
+    <view class="img-upload" bindtap="uploadImg">
+      <image wx:if="{{form.imageUrl}}" src="{{form.imageUrl}}" mode="aspectFill" class="upload-preview" />
+      <view wx:else class="upload-placeholder">
+        <text class="upload-icon">📷</text>
+        <text class="upload-text">点击上传图片</text>
+      </view>
+    </view>
+
+    <view class="form-field">
+      <text class="field-label">名称</text>
+      <input class="field-input" value="{{form.name}}" bindinput="onFormInput" data-key="name" placeholder="请输入名称" />
+    </view>
+
+    <view class="form-field" wx:if="{{activeTab === 'food'}}">
+      <text class="field-label">描述</text>
+      <input class="field-input" value="{{form.description}}" bindinput="onFormInput" data-key="description" placeholder="可选" />
+    </view>
+
+    <view class="form-field">
+      <text class="field-label">分类</text>
+      <picker bindchange="onCatChange" value="{{catIndex}}" range="{{catNames}}">
+        <view class="field-picker">
+          <text>{{catNames[catIndex] || '请选择分类'}}</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-footer">
+      <view class="btn-save" bindtap="saveItem">保存</view>
+    </view>
+  </view>
+</view>

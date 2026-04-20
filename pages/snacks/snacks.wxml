@@ -1,0 +1,51 @@
+<!-- 备注弹窗 -->
+<note-popup
+  show="{{notePopup.show}}"
+  itemId="{{notePopup.itemId}}"
+  itemName="{{notePopup.itemName}}"
+  note="{{notePopup.note}}"
+  bind:close="onNoteClose"
+/>
+
+<!-- 顶部分类筛选 -->
+<scroll-view class="cat-filter" scroll-x wx:if="{{categories.length > 0}}">
+  <view class="cat-filter-inner">
+    <view
+      wx:for="{{categories}}"
+      wx:key="_id"
+      class="cat-tag {{activeCat === item._id ? 'active' : ''}}"
+      bindtap="filterByCategory"
+      data-id="{{item._id}}"
+    >
+      {{item.icon}} {{item.name}}
+    </view>
+    <view
+      class="cat-tag {{activeCat === '' ? 'active' : ''}}"
+      bindtap="filterByCategory"
+      data-id=""
+    >全部</view>
+  </view>
+</scroll-view>
+
+<!-- 加载中 -->
+<view class="loading-wrap" wx:if="{{loading}}">
+  <text>加载中...</text>
+</view>
+
+<!-- 零食网格 -->
+<scroll-view class="snack-scroll" scroll-y wx:else>
+  <view class="snack-grid">
+    <view class="snack-cell" wx:for="{{filteredItems}}" wx:key="_id">
+      <snack-item item="{{item}}" bind:editnote="onEditNote" />
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{filteredItems.length === 0}}">
+    <text>暂时没有零食哦~</text>
+  </view>
+
+  <view style="height: 160rpx;"></view>
+</scroll-view>
+
+<!-- 底部购物车 -->
+<cart-bar />

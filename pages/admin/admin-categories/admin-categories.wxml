@@ -1,0 +1,49 @@
+<view class="page">
+  <!-- Tab切换 -->
+  <view class="tab-bar">
+    <view class="tab-item {{activeTab === 'food' ? 'active' : ''}}" bindtap="switchTab" data-tab="food">🍽 菜品分类</view>
+    <view class="tab-item {{activeTab === 'snack' ? 'active' : ''}}" bindtap="switchTab" data-tab="snack">🍬 零食分类</view>
+  </view>
+
+  <scroll-view class="list" scroll-y>
+      <view class="loading-wrap" wx:if="{{loading}}"><text>加载中...</text></view>
+    <view wx:else>
+      <view class="cat-row" wx:for="{{categories}}" wx:key="_id">
+        <text class="cat-icon-text">{{item.icon}}</text>
+        <view class="cat-info">
+          <text class="cat-name">{{item.name}}</text>
+        </view>
+        <view class="row-actions">
+          <view class="action-btn edit" bindtap="editCat" data-item="{{item}}">编辑</view>
+          <view class="action-btn delete" bindtap="deleteCat" data-id="{{item._id}}" data-name="{{item.name}}">删除</view>
+        </view>
+      </view>
+      <view class="empty-tip" wx:if="{{categories.length === 0}}">还没有分类，点击右下角添加</view>
+    </view>
+    <view style="height:160rpx;"></view>
+  </scroll-view>
+
+  <view class="fab" bindtap="addCat">＋</view>
+</view>
+
+<!-- 新增/编辑弹窗 -->
+<view class="mask" wx:if="{{showForm}}">
+  <view class="form-sheet">
+    <view class="form-header">
+      <text class="form-title">{{editingId ? '编辑分类' : '新增分类'}}</text>
+      <text class="form-close" bindtap="closeForm">✕</text>
+    </view>
+
+    <view class="form-field">
+      <text class="field-label">图标（粘贴一个 emoji）</text>
+      <input class="field-input" value="{{form.icon}}" bindinput="onInput" data-key="icon" placeholder="如 🥦" maxlength="4"/>
+    </view>
+
+    <view class="form-field">
+      <text class="field-label">分类名称</text>
+      <input class="field-input" value="{{form.name}}" bindinput="onInput" data-key="name" placeholder="如 素菜"/>
+    </view>
+
+    <view class="btn-save" bindtap="saveCat">保存</view>
+  </view>
+</view>

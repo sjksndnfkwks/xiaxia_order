@@ -1,0 +1,16 @@
+<view class="snack-card">
+  <image class="snack-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
+  <text class="snack-name">{{item.name}}</text>
+  <view class="snack-footer">
+    <view class="qty-control" wx:if="{{quantity > 0}}">
+      <view class="qty-btn minus" catchtap="onMinus">－</view>
+      <text class="qty-num">{{quantity}}</text>
+      <view class="qty-btn plus" catchtap="onPlus">＋</view>
+    </view>
+    <view class="add-btn" wx:else catchtap="onPlus">＋</view>
+  </view>
+  <view class="note-row" wx:if="{{quantity > 0}}" catchtap="editNote">
+    <text class="note-text" wx:if="{{note}}">📝 {{note}}</text>
+    <text class="note-text hint" wx:else>+ 加备注</text>
+  </view>
+</view>

@@ -1,0 +1,9 @@
+{
+  "name": "sendChatNotify",
+  "version": "1.0.0",
+  "description": "用户发消息后推送订阅消息给管理员",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

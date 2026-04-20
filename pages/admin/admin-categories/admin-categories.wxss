@@ -1,0 +1,116 @@
+.page { background: var(--c-bg); min-height: 100vh; }
+
+.tab-bar {
+  display: flex;
+  background: var(--c-bg-card);
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+
+.tab-item {
+  flex: 1;
+  padding: 28rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--c-text-sub);
+  border-bottom: 4rpx solid transparent;
+}
+
+.tab-item.active {
+  color: var(--c-primary);
+  font-weight: 700;
+  border-bottom-color: var(--c-primary);
+}
+
+.list { height: calc(100vh - 96rpx); padding: 20rpx; box-sizing: border-box; }
+
+.cat-row {
+  background: var(--c-bg-card);
+  border-radius: var(--r-card);
+  padding: 24rpx 28rpx;
+  margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  box-shadow: var(--shadow-card);
+  border: 1rpx solid var(--c-border-light);
+}
+
+.cat-icon-text { font-size: 52rpx; flex-shrink: 0; }
+
+.cat-info { flex: 1; display: flex; flex-direction: column; gap: 6rpx; }
+.cat-name { font-size: 30rpx; font-weight: 600; color: var(--c-text-h); }
+
+.row-actions { display: flex; gap: 12rpx; flex-shrink: 0; }
+
+.action-btn {
+  font-size: 22rpx;
+  padding: 10rpx 20rpx;
+  border-radius: 10rpx;
+  font-weight: 600;
+}
+.action-btn.edit { background: var(--c-primary-pale); color: var(--c-primary); }
+.action-btn.delete { background: rgba(255, 107, 157, 0.12); color: var(--c-accent); }
+
+.empty-tip { padding: 80rpx; text-align: center; color: var(--c-text-hint); font-size: 28rpx; }
+
+/* 弹窗 */
+.mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(13, 31, 110, 0.5);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+}
+
+.form-sheet {
+  background: var(--c-bg-card);
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 36rpx 36rpx calc(36rpx + env(safe-area-inset-bottom));
+  width: 100%;
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32rpx;
+}
+
+.form-title { font-size: 32rpx; font-weight: 700; color: var(--c-text-h); }
+.form-close { font-size: 40rpx; color: var(--c-text-hint); padding: 8rpx 16rpx; }
+
+.form-field { margin-bottom: 24rpx; }
+
+.field-label {
+  font-size: 26rpx;
+  color: var(--c-text-sub);
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.field-input {
+  width: 100%;
+  height: 80rpx;
+  background: var(--c-bg);
+  border-radius: var(--r-input);
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: var(--c-text-body);
+  border: 2rpx solid var(--c-border);
+  box-sizing: border-box;
+}
+
+.btn-save {
+  background: var(--grad-primary);
+  color: #fff;
+  height: 88rpx;
+  border-radius: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  font-weight: 700;
+  margin-top: 12rpx;
+  box-shadow: var(--shadow-btn);
+}

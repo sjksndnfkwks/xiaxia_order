@@ -1,0 +1,85 @@
+<!-- 列表 -->
+<scroll-view class="ann-list" scroll-y wx:if="{{!showForm}}">
+  <view class="tip-card">
+    <text class="tip-text">💡 日期格式：每年重复填 MM-DD（如 06-01），特定年份填 YYYY-MM-DD（如 2026-02-14）</text>
+  </view>
+
+  <view class="loading-wrap" wx:if="{{loading}}"><text>加载中...</text></view>
+  <view wx:else>
+    <view class="ann-item" wx:for="{{anniversaries}}" wx:key="_id">
+      <image class="ann-img" src="{{item.flowerImageUrl || '/assets/images/flower-default.png'}}" mode="aspectFill" />
+      <view class="ann-info">
+        <text class="ann-date">📅 {{item.date}}</text>
+        <text class="ann-title-text">{{item.title}}</text>
+        <text class="ann-preview">{{item.letterContent.slice(0,30)}}{{item.letterContent.length > 30 ? '...' : ''}}</text>
+        <view class="active-tag {{item.active ? 'on' : 'off'}}">{{item.active ? '已启用' : '已停用'}}</view>
+      </view>
+      <view class="ann-actions">
+        <view class="action-btn edit" bindtap="editAnn" data-item="{{item}}">编辑</view>
+        <view class="action-btn toggle" bindtap="toggleActive" data-id="{{item._id}}" data-val="{{item.active}}">
+          {{item.active ? '停用' : '启用'}}
+        </view>
+        <view class="action-btn delete" bindtap="deleteAnn" data-id="{{item._id}}">删除</view>
+      </view>
+    </view>
+    <view class="empty-tip" wx:if="{{anniversaries.length === 0}}">还没有纪念日，快去添加吧！</view>
+  </view>
+
+  <view style="height: 160rpx;"></view>
+</scroll-view>
+
+<!-- 新增按钮 -->
+<view class="fab" bindtap="addAnn" wx:if="{{!showForm}}">＋</view>
+
+<!-- 新增/编辑表单 -->
+<scroll-view class="form-page" scroll-y wx:if="{{showForm}}">
+  <view class="form-header">
+    <view class="form-back" bindtap="closeForm">‹ 返回</view>
+    <text class="form-title">{{editingId ? '编辑纪念日' : '新增纪念日'}}</text>
+  </view>
+
+  <!-- 花束图片 -->
+  <view class="field-card">
+    <text class="field-label">花束图片</text>
+    <view class="img-upload" bindtap="uploadImg">
+      <image wx:if="{{form.flowerImageUrl}}" src="{{form.flowerImageUrl}}" mode="aspectFit" class="upload-preview" />
+      <view wx:else class="upload-placeholder">
+        <text class="upload-icon">💐</text>
+        <text class="upload-text">点击上传花束图片</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 日期 -->
+  <view class="field-card">
+    <text class="field-label">日期类型</text>
+    <view class="radio-row">
+      <view class="radio-item {{dateType === 'yearly' ? 'active' : ''}}" bindtap="setDateType" data-type="yearly">每年重复（MM-DD）</view>
+      <view class="radio-item {{dateType === 'once' ? 'active' : ''}}" bindtap="setDateType" data-type="once">特定年份（YYYY-MM-DD）</view>
+    </view>
+    <view class="date-pickers">
+      <picker wx:if="{{dateType === 'yearly'}}" mode="date" bindchange="onMonthDayChange" value="{{pickerDateFull}}">
+        <view class="field-input">{{form.date || '选择月份/日期'}}</view>
+      </picker>
+      <picker wx:else mode="date" bindchange="onFullDateChange" value="{{pickerDateFull}}">
+        <view class="field-input">{{form.date || '选择完整日期'}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 标题 -->
+  <view class="field-card">
+    <text class="field-label">标题</text>
+    <input class="field-input" value="{{form.title}}" bindinput="onInput" data-key="title" placeholder="如：在一起一周年" />
+  </view>
+
+  <!-- 信件正文 -->
+  <view class="field-card">
+    <text class="field-label">信件内容</text>
+    <textarea class="letter-input" value="{{form.letterContent}}" bindinput="onInput" data-key="letterContent" placeholder="写下你想对她说的话..." maxlength="500" />
+    <text class="char-count">{{form.letterContent.length}}/500</text>
+  </view>
+
+  <view class="form-submit" bindtap="saveAnn">保存纪念日</view>
+  <view style="height: 60rpx;"></view>
+</scroll-view>

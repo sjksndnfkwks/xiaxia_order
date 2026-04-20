@@ -1,0 +1,50 @@
+<view class="loading-wrap" wx:if="{{loading}}">
+  <text>加载中...</text>
+</view>
+
+<view wx:else class="detail-page">
+  <!-- 状态卡片 -->
+  <view class="status-card">
+    <view class="status-icon">
+      <text wx:if="{{order.status === 'pending'}}">⏳</text>
+      <text wx:elif="{{order.status === 'confirmed'}}">✅</text>
+      <text wx:elif="{{order.status === 'done'}}">🎉</text>
+      <text wx:else>❌</text>
+    </view>
+    <text class="status-label">{{statusText[order.status]}}</text>
+    <text class="order-no-text">订单号：{{order.orderNo}}</text>
+    <text class="order-time-text">{{order.createdAtStr}}</text>
+  </view>
+
+  <!-- 整体备注 -->
+  <view class="info-card" wx:if="{{order.overallNote}}">
+    <view class="card-title">整体备注</view>
+    <view class="overall-note-text">💬 {{order.overallNote}}</view>
+  </view>
+
+  <!-- 菜品 -->
+  <view class="info-card" wx:if="{{order.foodItems && order.foodItems.length > 0}}">
+    <view class="card-title">🍽 菜品（{{order.totalFoodCount}}件）</view>
+    <view class="item-row" wx:for="{{order.foodItems}}" wx:key="itemId">
+      <image class="item-img" src="{{item.imageUrl}}" mode="aspectFill" />
+      <view class="item-info">
+        <text class="item-name">{{item.name}} × {{item.quantity}}</text>
+        <text class="item-note" wx:if="{{item.note}}">备注：{{item.note}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 零食 -->
+  <view class="info-card" wx:if="{{order.snackItems && order.snackItems.length > 0}}">
+    <view class="card-title">🍬 零食（{{order.totalSnackCount}}件）</view>
+    <view class="item-row" wx:for="{{order.snackItems}}" wx:key="itemId">
+      <image class="item-img" src="{{item.imageUrl}}" mode="aspectFill" />
+      <view class="item-info">
+        <text class="item-name">{{item.name}} × {{item.quantity}}</text>
+        <text class="item-note" wx:if="{{item.note}}">备注：{{item.note}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view style="height: 60rpx;"></view>
+</view>

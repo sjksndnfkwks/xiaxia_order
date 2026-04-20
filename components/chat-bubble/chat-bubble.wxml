@@ -1,0 +1,30 @@
+<view class="bubble-row {{isSelf ? 'self' : 'other'}}">
+  <image class="avatar" src="{{avatarUrl}}" mode="aspectFill" wx:if="{{!isSelf}}" />
+
+  <view class="bubble-wrap">
+    <!-- 文字/表情 -->
+    <view class="bubble text-bubble" wx:if="{{msg.type === 'text' || msg.type === 'emoji'}}">
+      <text class="bubble-text" user-select>{{msg.content}}</text>
+    </view>
+
+    <!-- 图片 -->
+    <view class="bubble img-bubble" wx:elif="{{msg.type === 'image'}}" bindtap="previewImg">
+      <image src="{{msg.mediaUrl}}" mode="aspectFill" class="msg-img" />
+    </view>
+
+    <!-- 视频 -->
+    <view class="bubble video-bubble" wx:elif="{{msg.type === 'video'}}">
+      <video src="{{msg.mediaUrl}}" class="msg-video" object-fit="cover" show-play-btn />
+    </view>
+
+    <!-- 语音 -->
+    <view class="bubble voice-bubble" wx:elif="{{msg.type === 'voice'}}" bindtap="playVoice">
+      <text class="voice-icon">{{playing ? '🔊' : '🎵'}}</text>
+      <text class="voice-duration">{{msg.duration}}"</text>
+    </view>
+
+    <text class="bubble-time">{{timeStr}}</text>
+  </view>
+
+  <image class="avatar self-avatar" src="{{avatarUrl}}" mode="aspectFill" wx:if="{{isSelf}}" />
+</view>

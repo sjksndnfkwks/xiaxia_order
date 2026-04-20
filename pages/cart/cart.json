@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "购物车",
+  "usingComponents": {
+    "note-popup": "/components/note-popup/note-popup"
+  }
+}

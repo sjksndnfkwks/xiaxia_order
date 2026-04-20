@@ -1,0 +1,20 @@
+<view class="food-item">
+  <image class="food-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
+  <view class="food-info">
+    <text class="food-name">{{item.name}}</text>
+    <text class="food-desc" wx:if="{{item.description}}">{{item.description}}</text>
+    <view class="food-note-row" wx:if="{{note}}" bindtap="editNote">
+      <text class="food-note-text">备注: {{note}}</text>
+      <text class="note-edit">✏️</text>
+    </view>
+  </view>
+  <view class="food-action">
+    <view class="qty-control" wx:if="{{quantity > 0}}">
+      <view class="qty-btn minus" catchtap="onMinus">－</view>
+      <text class="qty-num">{{quantity}}</text>
+      <view class="qty-btn plus" catchtap="onPlus">＋</view>
+    </view>
+    <view class="add-btn" wx:else catchtap="onPlus">＋</view>
+    <view class="note-btn" wx:if="{{quantity > 0}}" catchtap="editNote">📝</view>
+  </view>
+</view>

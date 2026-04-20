@@ -1,0 +1,15 @@
+<view class="cart-bar" wx:if="{{totalCount > 0}}">
+  <view class="cart-icon-wrap" bindtap="goCart">
+    <view class="cart-icon">🛒</view>
+    <view class="cart-badge">{{totalCount}}</view>
+  </view>
+  <view class="cart-info" bindtap="goCart">
+    <text class="cart-count">已选 {{totalCount}} 件</text>
+    <text class="cart-detail" wx:if="{{foodCount > 0 && snackCount > 0}}">菜{{foodCount}} · 零食{{snackCount}}</text>
+    <text class="cart-detail" wx:elif="{{foodCount > 0}}">菜品 {{foodCount}} 件</text>
+    <text class="cart-detail" wx:else>零食 {{snackCount}} 件</text>
+  </view>
+  <view class="cart-submit" bindtap="goCart">去下单</view>
+</view>
+
+<view class="cart-placeholder" wx:if="{{totalCount > 0}}"></view>

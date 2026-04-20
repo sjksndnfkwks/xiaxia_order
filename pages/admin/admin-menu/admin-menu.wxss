@@ -1,0 +1,207 @@
+.tab-bar {
+  display: flex;
+  background: var(--c-bg-card);
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+
+.tab-item {
+  flex: 1;
+  padding: 28rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--c-text-sub);
+  border-bottom: 4rpx solid transparent;
+}
+
+.tab-item.active {
+  color: var(--c-primary);
+  font-weight: 700;
+  border-bottom-color: var(--c-primary);
+}
+
+.item-list {
+  height: calc(100vh - 100rpx);
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 28rpx;
+  background: var(--c-bg-card);
+  border-bottom: 1rpx solid var(--c-border-light);
+  gap: 20rpx;
+}
+
+.list-img {
+  width: 110rpx;
+  height: 110rpx;
+  border-radius: 12rpx;
+  background: var(--c-primary-pale);
+  flex-shrink: 0;
+}
+
+.list-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.list-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--c-text-h);
+}
+
+.list-desc {
+  font-size: 22rpx;
+  color: var(--c-text-sub);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-tags { display: flex; gap: 8rpx; }
+
+.avail-tag {
+  font-size: 20rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 20rpx;
+  font-weight: 600;
+}
+
+.avail-tag.on { background: #D4F5E2; color: #1A6B3A; }
+.avail-tag.off { background: #FFE4E8; color: #8B1A2A; }
+
+.list-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  font-size: 22rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  text-align: center;
+  font-weight: 600;
+}
+
+.action-btn.edit { background: var(--c-primary-pale); color: var(--c-primary); }
+.action-btn.toggle { background: rgba(0, 180, 216, 0.12); color: var(--c-teal); }
+.action-btn.delete { background: rgba(255, 107, 157, 0.12); color: var(--c-accent); }
+
+.empty-tip {
+  padding: 80rpx;
+  text-align: center;
+  color: var(--c-text-hint);
+  font-size: 28rpx;
+}
+
+/* 表单弹窗 */
+.form-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(13, 31, 110, 0.5);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+}
+
+.form-sheet {
+  background: var(--c-bg-card);
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx 32rpx calc(32rpx + env(safe-area-inset-bottom));
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28rpx;
+}
+
+.form-title { font-size: 32rpx; font-weight: 700; color: var(--c-text-h); }
+.form-close { font-size: 40rpx; color: var(--c-text-hint); padding: 8rpx 16rpx; }
+
+.img-upload {
+  width: 100%;
+  height: 220rpx;
+  background: var(--c-bg);
+  border-radius: 16rpx;
+  border: 2rpx dashed var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28rpx;
+  overflow: hidden;
+}
+
+.upload-preview { width: 100%; height: 100%; }
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.upload-icon { font-size: 60rpx; }
+.upload-text { font-size: 26rpx; color: var(--c-text-sub); }
+
+.form-field {
+  margin-bottom: 24rpx;
+}
+
+.field-label {
+  font-size: 26rpx;
+  color: var(--c-text-sub);
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.field-input {
+  width: 100%;
+  height: 80rpx;
+  background: var(--c-bg);
+  border-radius: var(--r-input);
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: var(--c-text-body);
+  border: 2rpx solid var(--c-border);
+  box-sizing: border-box;
+}
+
+.field-picker {
+  display: flex;
+  align-items: center;
+  height: 80rpx;
+  background: var(--c-bg);
+  border-radius: var(--r-input);
+  padding: 0 24rpx;
+  border: 2rpx solid var(--c-border);
+  color: var(--c-text-body);
+  font-size: 28rpx;
+}
+
+.picker-arrow { margin-left: auto; color: var(--c-border); font-size: 36rpx; }
+
+.form-footer { margin-top: 32rpx; }
+
+.btn-save {
+  background: var(--grad-primary);
+  color: #fff;
+  height: 88rpx;
+  border-radius: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: 700;
+  box-shadow: var(--shadow-btn);
+}

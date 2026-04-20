@@ -1,0 +1,9 @@
+{
+  "name": "getAnalytics",
+  "version": "1.0.0",
+  "description": "统计各菜品/零食点单频次，用于管理员分析",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

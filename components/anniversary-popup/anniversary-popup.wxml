@@ -1,0 +1,31 @@
+<view class="ann-mask" wx:if="{{show}}">
+  <view class="ann-card {{entered ? 'entered' : ''}}">
+    <!-- 花束图片 -->
+    <view class="flower-wrap" bindtap="previewFlower">
+      <image
+        class="flower-img"
+        src="{{anniversary.flowerImageUrl || '/assets/images/flower-default.png'}}"
+        mode="aspectFit"
+      />
+    </view>
+
+    <!-- 标题 -->
+    <view class="ann-title-row">
+      <text class="ann-title">{{anniversary.title}}</text>
+    </view>
+
+    <!-- 信件内容 -->
+    <scroll-view class="letter-scroll" scroll-y>
+      <view class="letter-wrap">
+        <text class="letter-quote">"</text>
+        <text class="letter-content">{{anniversary.letterContent}}</text>
+        <text class="letter-quote end">"</text>
+      </view>
+    </scroll-view>
+
+    <!-- 关闭按钮 -->
+    <view class="ann-close" bindtap="onClose">
+      <text>收下了 💙</text>
+    </view>
+  </view>
+</view>

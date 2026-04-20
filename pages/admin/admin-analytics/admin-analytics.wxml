@@ -1,0 +1,39 @@
+<view class="analytics-page">
+  <view class="loading-wrap" wx:if="{{loading}}"><text>统计中...</text></view>
+
+  <view wx:else>
+    <!-- 菜品排行 -->
+    <view class="rank-section">
+      <view class="section-title">🍽 菜品点单排行</view>
+      <view class="empty-tip" wx:if="{{foodRanking.length === 0}}">暂无数据</view>
+      <view class="rank-item" wx:for="{{foodRanking}}" wx:key="_id">
+        <text class="rank-no">{{index + 1}}</text>
+        <image class="rank-img" src="{{item.imageUrl}}" mode="aspectFill" />
+        <view class="rank-info">
+          <text class="rank-name">{{item.name}}</text>
+          <view class="rank-bar-wrap">
+            <view class="rank-bar" style="width: {{item.pct}}%"></view>
+          </view>
+        </view>
+        <text class="rank-qty">×{{item.totalQty}}</text>
+      </view>
+    </view>
+
+    <!-- 零食排行 -->
+    <view class="rank-section">
+      <view class="section-title">🍬 零食点单排行</view>
+      <view class="empty-tip" wx:if="{{snackRanking.length === 0}}">暂无数据</view>
+      <view class="rank-item" wx:for="{{snackRanking}}" wx:key="_id">
+        <text class="rank-no">{{index + 1}}</text>
+        <image class="rank-img" src="{{item.imageUrl}}" mode="aspectFill" />
+        <view class="rank-info">
+          <text class="rank-name">{{item.name}}</text>
+          <view class="rank-bar-wrap">
+            <view class="rank-bar snack-bar" style="width: {{item.pct}}%"></view>
+          </view>
+        </view>
+        <text class="rank-qty">×{{item.totalQty}}</text>
+      </view>
+    </view>
+  </view>
+</view>

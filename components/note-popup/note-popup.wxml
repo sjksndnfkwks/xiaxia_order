@@ -1,0 +1,21 @@
+<view class="popup-mask" wx:if="{{show}}" bindtap="onMaskTap">
+  <view class="popup-sheet" catchtap="">
+    <view class="popup-header">
+      <text class="popup-title">给「{{itemName}}」加备注</text>
+      <text class="popup-hint">有什么特殊要求尽管说~</text>
+    </view>
+    <textarea
+      class="note-input"
+      value="{{noteValue}}"
+      placeholder="例如：不要葱、少辣、多放酱..."
+      maxlength="50"
+      bindinput="onInput"
+      auto-focus
+    />
+    <view class="char-count">{{noteValue.length}}/50</view>
+    <view class="popup-footer">
+      <view class="btn-cancel" bindtap="onCancel">取消</view>
+      <view class="btn-confirm" bindtap="onConfirm">确定</view>
+    </view>
+  </view>
+</view>

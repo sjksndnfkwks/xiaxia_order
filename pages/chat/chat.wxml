@@ -1,0 +1,88 @@
+<view class="chat-page">
+  <!-- 消息列表 -->
+  <scroll-view
+    class="msg-list"
+    scroll-y
+    scroll-into-view="{{scrollId}}"
+    scroll-with-animation
+    style="bottom: {{inputBarHeight}}px;"
+  >
+    <view style="height: 24rpx;"></view>
+    <block wx:for="{{messages}}" wx:key="_id">
+      <chat-bubble
+        id="msg-{{item._id}}"
+        msg="{{item}}"
+        isSelf="{{item.senderId === myOpenid}}"
+        avatarUrl="{{item.senderId === myOpenid ? myAvatar : adminAvatar}}"
+      />
+    </block>
+    <view id="msg-bottom" style="height: 20rpx;"></view>
+  </scroll-view>
+
+  <!-- 输入工具栏 -->
+  <view class="input-bar" style="padding-bottom: {{safeBottom}}px;">
+    <!-- 语音/文字切换 -->
+    <view class="icon-btn" bindtap="toggleVoice">
+      <text>{{voiceMode ? '⌨️' : '🎤'}}</text>
+    </view>
+
+    <!-- 文字输入 -->
+    <input
+      wx:if="{{!voiceMode}}"
+      class="text-input"
+      value="{{inputText}}"
+      placeholder="说点什么..."
+      bindinput="onInput"
+      bindconfirm="sendText"
+      confirm-type="send"
+      adjust-position
+    />
+
+    <!-- 语音录制按钮 -->
+    <view
+      wx:else
+      class="voice-btn {{recording ? 'recording' : ''}}"
+      bindtouchstart="startRecord"
+      bindtouchend="stopRecord"
+      bindtouchcancel="cancelRecord"
+    >
+      <text>{{recording ? '松开发送' : '按住说话'}}</text>
+    </view>
+
+    <!-- 表情 -->
+    <view class="icon-btn" bindtap="toggleEmoji">
+      <text>😊</text>
+    </view>
+
+    <!-- 更多（图片/视频）-->
+    <view class="icon-btn" bindtap="toggleExtra">
+      <text>➕</text>
+    </view>
+
+    <!-- 发送按钮 -->
+    <view class="send-btn" bindtap="sendText" wx:if="{{inputText.length > 0}}">发送</view>
+  </view>
+
+  <!-- 表情面板 -->
+  <view class="emoji-panel" wx:if="{{showEmoji}}">
+    <view
+      class="emoji-item"
+      wx:for="{{emojiList}}"
+      wx:key="index"
+      bindtap="sendEmoji"
+      data-emoji="{{item}}"
+    >{{item}}</view>
+  </view>
+
+  <!-- 更多面板（图片/视频）-->
+  <view class="extra-panel" wx:if="{{showExtra}}">
+    <view class="extra-btn" bindtap="sendImage">
+      <text class="extra-icon">🖼</text>
+      <text class="extra-label">图片</text>
+    </view>
+    <view class="extra-btn" bindtap="sendVideo">
+      <text class="extra-icon">🎬</text>
+      <text class="extra-label">视频</text>
+    </view>
+  </view>
+</view>
