@@ -8,6 +8,7 @@ App({
     isAdmin: false,
     userInfo: null,
     todayAnniversary: null,
+    todayAnnouncement: null,
     loginReady: false,
     loginCallbacks: []
   },
@@ -42,6 +43,8 @@ App({
 
         // 检查今日纪念日
         this._checkAnniversary()
+        // 检查最新公告
+        this._checkAnnouncement()
 
         // 管理员自动请求订阅消息权限
         if (isAdmin) {
@@ -81,12 +84,36 @@ App({
         const match = findTodayAnniversary(res.data)
         if (!match) return
 
-        // 判断今天是否已经弹过
         const key = getAnniversaryShownKey(match.date)
         const shown = wx.getStorageSync(key)
         if (shown) return
 
         this.globalData.todayAnniversary = match
+
+        // 通知当前 food 页（如果已经在显示）
+        const pages = getCurrentPages()
+        const foodPage = pages.find(p => p.route === 'pages/food/food')
+        if (foodPage) {
+          foodPage.setData({ showAnniversary: true, todayAnniversary: match })
+        }
+      }
+    })
+  },
+
+  _checkAnnouncement() {
+    const db = wx.cloud.database()
+    db.collection('announcements').orderBy('publishDate', 'desc').limit(1).get({
+      success: res => {
+        const latest = res.data[0]
+        if (!latest) return
+        const shown = wx.getStorageSync('annShown_' + latest._id)
+        if (shown) return
+        this.globalData.todayAnnouncement = latest
+        const pages = getCurrentPages()
+        const foodPage = pages.find(p => p.route === 'pages/food/food')
+        if (foodPage) {
+          foodPage.setData({ showAnnouncement: true, todayAnnouncement: latest })
+        }
       }
     })
   },

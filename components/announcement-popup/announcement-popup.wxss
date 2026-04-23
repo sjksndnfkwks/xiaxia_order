@@ -1,0 +1,97 @@
+.anb-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 310;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+
+.anb-card {
+  width: 100%;
+  max-height: 85vh;
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  transform: scale(0.9);
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.25s ease;
+}
+
+.anb-card.entered {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.anb-close {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  font-size: 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.anb-img {
+  width: 100%;
+  max-height: 420rpx;
+  display: block;
+}
+
+.anb-body {
+  padding: 24rpx 28rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.anb-meta {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.anb-date {
+  font-size: 22rpx;
+  color: #888;
+}
+
+.anb-tag {
+  font-size: 20rpx;
+  color: #fff;
+  background: #FFD85A;
+  color: #4A3A00;
+  padding: 2rpx 12rpx;
+  border-radius: 10rpx;
+  font-weight: 700;
+}
+
+.anb-title {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #1D1B3B;
+}
+
+.anb-content-scroll {
+  max-height: 300rpx;
+}
+
+.anb-content {
+  font-size: 26rpx;
+  color: #444;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  display: block;
+}

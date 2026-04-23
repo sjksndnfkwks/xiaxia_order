@@ -76,5 +76,6 @@ Page({
   goOrders() { wx.navigateTo({ url: '/pages/admin/admin-orders/admin-orders' }) },
   goAnalytics() { wx.navigateTo({ url: '/pages/admin/admin-analytics/admin-analytics' }) },
   goAnniversaries() { wx.navigateTo({ url: '/pages/admin/admin-anniversaries/admin-anniversaries' }) },
+  goAnnouncements() { wx.navigateTo({ url: '/pages/admin/admin-announcements/admin-announcements' }) },
   goChat() { wx.switchTab({ url: '/pages/chat/chat' }) }
 })

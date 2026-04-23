@@ -1,13 +1,55 @@
+.msg-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32rpx;
+  transition: background 0.2s;
+}
+
+.msg-row-ms {
+  padding-left: 16rpx;
+}
+
+.msg-row-checked {
+  background: rgba(94, 226, 211, 0.12);
+}
+
 .bubble-row {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: flex-end;
-  margin-bottom: 32rpx;
   padding: 0 24rpx;
   gap: 16rpx;
 }
 
 .bubble-row.self {
   flex-direction: row-reverse;
+}
+
+/* ── 多选勾选框 ── */
+.select-check {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  border: 3rpx solid #CCCCCC;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.select-check.checked {
+  background: #07C160;
+  border-color: #07C160;
+}
+
+.check-icon {
+  font-size: 28rpx;
+  color: #FFFFFF;
+  font-weight: bold;
+  line-height: 1;
 }
 
 .avatar {
@@ -34,15 +76,20 @@
   padding: 20rpx 28rpx;
 }
 
+/* ── 对方气泡：奶油白 ── */
 .other .bubble {
   background: var(--c-bg-card);
   border-bottom-left-radius: 4rpx;
   box-shadow: var(--shadow-card);
+  border: 1rpx solid var(--c-border-light);
 }
 
+/* ── 自己气泡：鸭子黄 ── */
 .self .bubble {
-  background: var(--grad-primary);
+  background: var(--c-yellow);
   border-bottom-right-radius: 4rpx;
+  box-shadow: var(--shadow-yellow);
+  border: 1rpx solid var(--c-yellow-deep);
 }
 
 .bubble-text {
@@ -50,8 +97,81 @@
   line-height: 1.6;
 }
 
-.other .bubble-text { color: var(--c-text-body); }
-.self .bubble-text { color: #fff; }
+.other .bubble-text { color: var(--c-text-h); }
+.self .bubble-text  { color: var(--c-primary); }
+
+/* ── 引用块（消息下方，灰底白字小号） ── */
+.quote-block {
+  background: #7A7A85;
+  border-radius: 10rpx;
+  padding: 10rpx 18rpx;
+  max-width: 100%;
+  margin-top: 4rpx;
+}
+
+.quote-text {
+  font-size: 22rpx;
+  color: #FFFFFF;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+/* ── 合并消息气泡 ── */
+.merged-bubble {
+  background: var(--c-bg-card);
+  border: 1rpx solid var(--c-border);
+  border-radius: 16rpx;
+  padding: 16rpx 20rpx;
+  min-width: 280rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.self .merged-bubble {
+  background: var(--c-yellow);
+  border-color: var(--c-yellow-deep);
+}
+
+.merged-bubble-title {
+  font-size: 24rpx;
+  color: var(--c-text-sub);
+  font-weight: 700;
+  padding-bottom: 8rpx;
+  border-bottom: 1rpx solid var(--c-border-light);
+  margin-bottom: 4rpx;
+}
+
+.merged-preview-text {
+  font-size: 22rpx;
+  color: var(--c-text-sub);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.merged-bubble-more {
+  font-size: 22rpx;
+  color: var(--c-text-hint);
+  text-align: center;
+}
+
+/* ── 撤回气泡 ── */
+.recalled-bubble {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.recalled-text {
+  font-size: 26rpx;
+  color: #AAAAAA;
+  font-style: italic;
+}
 
 .img-bubble {
   padding: 0;
@@ -82,16 +202,12 @@
   min-width: 120rpx;
 }
 
-.voice-icon {
-  font-size: 36rpx;
-}
+.voice-icon { font-size: 36rpx; }
 
-.voice-duration {
-  font-size: 26rpx;
-}
+.voice-duration { font-size: 26rpx; }
 
 .other .voice-duration { color: var(--c-text-sub); }
-.self .voice-duration { color: rgba(255,255,255,0.8); }
+.self .voice-duration  { color: var(--c-primary); font-weight: 600; }
 
 .bubble-time {
   font-size: 22rpx;

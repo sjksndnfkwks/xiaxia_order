@@ -1,7 +1,7 @@
 .ann-mask {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(13, 31, 110, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 300;
   display: flex;
   align-items: center;
@@ -11,106 +11,101 @@
 
 .ann-card {
   background: var(--c-bg-card);
-  border-radius: 40rpx;
+  border-radius: 32rpx;
   width: 100%;
-  max-height: 86vh;
+  max-height: 88vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
   overflow: hidden;
-  padding-bottom: 40rpx;
-  transform: translateY(100vh);
+  position: relative;
+  transform: scale(0.85);
   opacity: 0;
-  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
 }
 
 .ann-card.entered {
-  transform: translateY(0);
+  transform: scale(1);
   opacity: 1;
 }
 
-.flower-wrap {
-  width: 100%;
-  background: var(--grad-deep);
-  padding: 48rpx 0 32rpx;
-  display: flex;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.flower-wrap::after {
-  content: '✨ 🐾 ✨';
+/* 关闭按钮 */
+.ann-close {
   position: absolute;
-  bottom: 12rpx;
+  top: 20rpx;
   right: 20rpx;
-  font-size: 22rpx;
-  opacity: 0.3;
-  letter-spacing: 6rpx;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
-.flower-img {
-  width: 320rpx;
-  height: 320rpx;
+/* 背景图片 */
+.ann-bg-img {
+  width: 100%;
+  height: 480rpx;
+  display: block;
+  flex-shrink: 0;
 }
 
+/* 标题 */
 .ann-title-row {
-  padding: 28rpx 40rpx 16rpx;
-  text-align: center;
+  padding: 24rpx 32rpx 12rpx;
+  background: var(--c-bg-card);
 }
 
 .ann-title {
-  font-size: 40rpx;
+  font-size: 34rpx;
   font-weight: 800;
   color: var(--c-text-h);
   letter-spacing: 2rpx;
 }
 
+/* 信件滚动区 */
 .letter-scroll {
-  flex: 1;
-  width: 100%;
-  max-height: 360rpx;
-  padding: 0 40rpx;
-  box-sizing: border-box;
+  max-height: 320rpx;
+  flex-shrink: 0;
 }
 
-.letter-wrap {
-  position: relative;
-  padding: 24rpx;
-  background: var(--c-primary-pale);
-  border-radius: 20rpx;
-  border-left: 6rpx solid var(--c-primary);
+/* 信纸 */
+.letter-paper {
+  background: #FFFDF5;
+  margin: 0 32rpx 32rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
 }
 
-.letter-quote {
-  font-size: 60rpx;
-  color: var(--c-primary);
-  opacity: 0.25;
-  font-family: Georgia, serif;
-  line-height: 1;
-}
-
-.letter-quote.end {
+/* 每行信纸 */
+.letter-line {
+  padding: 0 24rpx;
+  border-bottom: 1rpx solid #E8DEC8;
+  min-height: 72rpx;
   display: flex;
+  align-items: center;
+}
+
+.letter-line:first-child {
+  border-top: 1rpx solid #E8DEC8;
+}
+
+.letter-from {
   justify-content: flex-end;
 }
 
-.letter-content {
+.letter-text {
   font-size: 28rpx;
-  color: var(--c-text-body);
-  line-height: 1.9;
+  color: #5C4A2A;
+  line-height: 1.6;
   display: block;
-  padding: 0 8rpx;
-  white-space: pre-wrap;
+  width: 100%;
 }
 
-.ann-close {
-  margin-top: 32rpx;
-  background: linear-gradient(135deg, #FF6B9D, #FF8FB5);
-  color: #fff;
-  font-size: 30rpx;
-  font-weight: 700;
-  padding: 24rpx 80rpx;
-  border-radius: 50rpx;
-  box-shadow: 0 6rpx 20rpx rgba(255, 107, 157, 0.35);
+.letter-from .letter-text {
+  text-align: right;
+  color: #8B6F47;
 }

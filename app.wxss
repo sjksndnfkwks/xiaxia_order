@@ -1,67 +1,238 @@
 /* ============================================
-   虾虾的626小食堂 — 史迪仔主题设计系统
+   虾虾的626小食堂 — MotherDuck 风格设计系统
+   深夜紫 × 鸭子黄 × 湖水青
    ============================================ */
 
 page {
-  /* 主色系：史迪仔深海蓝 */
-  --c-primary:        #1B4FD8;
-  --c-primary-mid:    #3B6FE8;
-  --c-primary-light:  #6B9FFF;
-  --c-primary-pale:   #E8EFFE;
+  /* ── 主色系：深夜紫（MotherDuck navy） ── */
+  --c-primary:        #1D1B3B;
+  --c-primary-mid:    #2A2752;
+  --c-primary-light:  #3D3A6A;
+  --c-primary-pale:   #E8E6F2;
 
-  /* 辅助色：星空青 */
-  --c-teal:           #00B4D8;
-  --c-teal-light:     #90E0EF;
+  /* ── 鸭子黄：主强调色 ── */
+  --c-yellow:         #FFD85A;
+  --c-yellow-deep:    #FFC947;
+  --c-yellow-pale:    #FFF7D6;
 
-  /* 强调色：史迪仔粉 */
-  --c-accent:         #FF6B9D;
-  --c-accent-light:   #FFB3CE;
+  /* ── 湖水青：辅助色 ── */
+  --c-teal:           #5EE2D3;
+  --c-teal-deep:      #2BB8A5;
+  --c-teal-pale:      #DFF7F3;
 
-  /* 背景色 */
-  --c-bg:             #F2F5FF;
+  /* ── 珊瑚粉：警示/可爱色 ── */
+  --c-accent:         #F87171;
+  --c-accent-light:   #FCA5A5;
+  --c-accent-pale:    #FEE2E2;
+
+  /* ── 保留旧别名（向后兼容） ── */
+  --c-purple:         #1D1B3B;
+  --c-purple-light:   #3D3A6A;
+  --c-teal-light:     #DFF7F3;
+  --c-orange:         #FFC947;
+
+  /* ── 背景：奶油白 ── */
+  --c-bg:             #FDFBF5;
   --c-bg-card:        #FFFFFF;
-  --c-bg-deep:        #0D1F6E;
+  --c-bg-cream:       #F7F2E3;
+  --c-bg-deep:        #1D1B3B;
 
-  /* 文字色 */
-  --c-text-h:         #0D1F6E;   /* 标题：深蓝 */
-  --c-text-body:      #2D3561;   /* 正文：中蓝灰 */
-  --c-text-sub:       #7B8AC4;   /* 辅助：浅蓝灰 */
-  --c-text-hint:      #B0BDF5;   /* 提示：更浅 */
+  /* ── 文字：深夜紫为主 ── */
+  --c-text-h:         #1D1B3B;
+  --c-text-body:      #4B4958;
+  --c-text-sub:       #7A788A;
+  --c-text-hint:      #A8A6B8;
   --c-text-white:     #FFFFFF;
 
-  /* 边框 */
-  --c-border:         #D6DFFF;
-  --c-border-light:   #EEF2FF;
+  /* ── 边框 ── */
+  --c-border:         #E8E5DA;
+  --c-border-light:   #F2EFE5;
 
-  /* 圆角 */
-  --r-card:    24rpx;
-  --r-btn:     50rpx;
-  --r-input:   16rpx;
-  --r-tag:     12rpx;
+  /* ── 圆角：MotherDuck 更方一点 ── */
+  --r-card:    20rpx;
+  --r-btn:     16rpx;
+  --r-input:   14rpx;
+  --r-tag:     10rpx;
+  --r-pill:    50rpx;
 
-  /* 阴影 */
-  --shadow-card:  0 4rpx 24rpx rgba(27, 79, 216, 0.10);
-  --shadow-float: 0 8rpx 32rpx rgba(27, 79, 216, 0.18);
-  --shadow-btn:   0 6rpx 20rpx rgba(27, 79, 216, 0.30);
+  /* ── 阴影：极简 ── */
+  --shadow-card:  0 1rpx 3rpx rgba(29, 27, 59, 0.04);
+  --shadow-float: 0 4rpx 12rpx rgba(29, 27, 59, 0.08);
+  --shadow-btn:   0 2rpx 4rpx rgba(29, 27, 59, 0.10);
+  --shadow-fuzzy: 0 1rpx 3rpx rgba(29, 27, 59, 0.04);
+  --shadow-yellow: 0 2rpx 6rpx rgba(255, 216, 90, 0.25);
 
-  /* 渐变 */
-  --grad-primary: linear-gradient(135deg, #1B4FD8 0%, #3B6FE8 50%, #00B4D8 100%);
-  --grad-card:    linear-gradient(135deg, #FFFFFF 0%, #F2F5FF 100%);
-  --grad-deep:    linear-gradient(160deg, #0D1F6E 0%, #1B4FD8 60%, #00B4D8 100%);
+  /* ── 渐变 ── */
+  --grad-primary: linear-gradient(135deg, #1D1B3B 0%, #2D2B5B 100%);
+  --grad-accent:  linear-gradient(135deg, #FFD85A 0%, #FFC947 100%);
+  --grad-teal:    linear-gradient(135deg, #5EE2D3 0%, #2BB8A5 100%);
+  --grad-card:    linear-gradient(180deg, #FFFFFF 0%, #FBF8EF 100%);
+  --grad-deep:    linear-gradient(160deg, #0F0E26 0%, #1D1B3B 60%, #2D2B5B 100%);
 
-  /* 字体 */
-  font-family: -apple-system, 'PingFang SC', 'Noto Sans SC', 'Helvetica Neue', Arial, sans-serif;
+  /* ── 字体：系统字优先（iOS 苹方 / Android 思源） ── */
+  font-family: -apple-system, 'PingFang SC', 'HarmonyOS Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', system-ui, sans-serif;
   font-size: 28rpx;
   color: var(--c-text-body);
   background-color: var(--c-bg);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
-/* ── 通用卡片 ── */
+/* 全局继承字体（组件/scroll-view/input 也要统一） */
+view, text, input, textarea, button, scroll-view, image, swiper, navigator, form, picker {
+  font-family: inherit;
+}
+
+/* ============================================
+   全局动画
+   ============================================ */
+
+@keyframes floatPaw {
+  0%, 100% { transform: translateY(0) rotate(-5deg); opacity: 0.08; }
+  50%       { transform: translateY(-24rpx) rotate(8deg); opacity: 0.14; }
+}
+
+@keyframes floatStar {
+  0%, 100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0.06; }
+  50%       { transform: translateY(-18rpx) scale(1.2) rotate(20deg); opacity: 0.10; }
+}
+
+@keyframes earFlap {
+  0%   { transform: rotate(-10deg) scaleY(0.92); }
+  100% { transform: rotate(10deg) scaleY(1.08); }
+}
+
+@keyframes bounce626 {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6rpx); }
+}
+
+@keyframes pulsePaw {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50%       { transform: scale(1.12); opacity: 1; }
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1; transform: scale(1.3); }
+}
+
+/* ============================================
+   加载动画
+   ============================================ */
+
+.stitch-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 28rpx;
+  background: var(--c-bg);
+}
+
+.stitch-loading .ears-wrap {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: -20rpx;
+}
+
+.stitch-loading .ear {
+  width: 36rpx;
+  height: 52rpx;
+  background: var(--grad-primary);
+  border-radius: 50% 50% 20% 20%;
+  animation: earFlap 0.55s ease-in-out infinite alternate;
+}
+
+.stitch-loading .ear:first-child {
+  transform-origin: bottom center;
+  transform: rotate(-20deg);
+  animation-delay: 0s;
+}
+
+.stitch-loading .ear:last-child {
+  transform-origin: bottom center;
+  transform: rotate(20deg);
+  animation-delay: 0.08s;
+}
+
+.stitch-loading .head-circle {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: var(--c-yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 52rpx;
+  box-shadow: var(--shadow-yellow);
+}
+
+.stitch-loading .loading-text {
+  font-size: 26rpx;
+  color: var(--c-text-sub);
+  letter-spacing: 2rpx;
+  font-weight: 500;
+}
+
+.stitch-loading .loading-dots::after {
+  content: '...';
+  animation: dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%   { content: ''; }
+  25%  { content: '.'; }
+  50%  { content: '..'; }
+  75%  { content: '...'; }
+}
+
+/* ============================================
+   浮动装饰
+   ============================================ */
+
+.bg-deco {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  user-select: none;
+}
+
+.bg-paw-1 {
+  top: 22%;
+  left: 6%;
+  font-size: 48rpx;
+  opacity: 0.07;
+  animation: floatPaw 7s ease-in-out infinite;
+}
+
+.bg-paw-2 {
+  bottom: 30%;
+  right: 8%;
+  font-size: 36rpx;
+  opacity: 0.06;
+  animation: floatPaw 9s ease-in-out infinite 1.5s;
+}
+
+.bg-star-1 {
+  top: 55%;
+  left: 14%;
+  font-size: 32rpx;
+  opacity: 0.07;
+  animation: floatStar 11s ease-in-out infinite 0.8s;
+}
+
+/* ============================================
+   通用卡片
+   ============================================ */
+
 .card {
   background: var(--c-bg-card);
   border-radius: var(--r-card);
   box-shadow: var(--shadow-card);
+  border: 1rpx solid var(--c-border-light);
   padding: 32rpx;
   margin-bottom: 24rpx;
 }
@@ -73,77 +244,72 @@ page {
   border: 1rpx solid var(--c-border-light);
 }
 
-/* ── 按钮 ── */
+/* ============================================
+   按钮（MotherDuck 风格）
+   ============================================ */
+
 .btn {
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--r-btn);
   font-size: 30rpx;
-  font-weight: 700;
-  letter-spacing: 2rpx;
-  padding: 22rpx 48rpx;
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+  padding: 22rpx 40rpx;
   border: none;
   outline: none;
-  transition: opacity 0.15s;
+  transition: transform 0.15s;
 }
 .btn::after { border: none; }
+.btn:active { transform: translateY(2rpx); }
 
+/* 主按钮：深紫底 + 白字 */
 .btn-primary {
-  background: var(--grad-primary);
+  background: var(--c-primary);
   color: #fff;
   box-shadow: var(--shadow-btn);
 }
 
+/* 强调按钮：鸭子黄 + 深紫字 */
 .btn-accent {
-  background: linear-gradient(135deg, #FF6B9D, #FF8FB5);
-  color: #fff;
-  box-shadow: 0 6rpx 20rpx rgba(255, 107, 157, 0.35);
+  background: var(--c-yellow);
+  color: var(--c-primary);
+  box-shadow: var(--shadow-yellow);
+  font-weight: 700;
 }
 
+/* 次要按钮：描边 */
 .btn-ghost {
   background: transparent;
   color: var(--c-primary);
   border: 2rpx solid var(--c-primary);
 }
 
-/* ── 标题层级（参考 Claude 字体节奏）── */
-.title-xl {
-  font-size: 48rpx;
-  font-weight: 800;
-  color: var(--c-text-h);
-  letter-spacing: -1rpx;
-  line-height: 1.25;
-}
-
-.title-lg {
-  font-size: 40rpx;
+/* 湖水青按钮 */
+.btn-teal {
+  background: var(--c-teal);
+  color: var(--c-primary);
   font-weight: 700;
-  color: var(--c-text-h);
-  letter-spacing: -0.5rpx;
-  line-height: 1.3;
 }
 
-.title-md {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: var(--c-text-h);
-  line-height: 1.4;
-}
+/* ============================================
+   标题层级
+   ============================================ */
 
-.title-sm {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--c-text-body);
-  line-height: 1.5;
-}
-
-.body-lg { font-size: 30rpx; color: var(--c-text-body); line-height: 1.7; }
-.body-md { font-size: 28rpx; color: var(--c-text-body); line-height: 1.7; }
-.body-sm { font-size: 24rpx; color: var(--c-text-sub);  line-height: 1.6; }
+.title-xl { font-size: 52rpx; font-weight: 800; color: var(--c-text-h); letter-spacing: -1rpx; line-height: 1.15; }
+.title-lg { font-size: 40rpx; font-weight: 800; color: var(--c-text-h); letter-spacing: -0.5rpx; line-height: 1.25; }
+.title-md { font-size: 32rpx; font-weight: 700; color: var(--c-text-h); line-height: 1.4; }
+.title-sm { font-size: 28rpx; font-weight: 600; color: var(--c-text-body); line-height: 1.5; }
+.body-lg  { font-size: 30rpx; color: var(--c-text-body); line-height: 1.65; }
+.body-md  { font-size: 28rpx; color: var(--c-text-body); line-height: 1.65; }
+.body-sm  { font-size: 24rpx; color: var(--c-text-sub); line-height: 1.6; }
 .caption  { font-size: 22rpx; color: var(--c-text-hint); line-height: 1.5; }
 
-/* ── Section 标题 ── */
+/* ============================================
+   Section 标题
+   ============================================ */
+
 .section-title {
   display: flex;
   align-items: center;
@@ -158,42 +324,48 @@ page {
   content: '';
   display: block;
   width: 8rpx;
-  height: 36rpx;
-  background: var(--grad-primary);
+  height: 32rpx;
+  background: var(--c-yellow);
   border-radius: 4rpx;
   flex-shrink: 0;
 }
 
-/* ── 状态标签 ── */
+/* ============================================
+   状态标签
+   ============================================ */
+
 .tag {
   display: inline-flex;
   align-items: center;
-  padding: 6rpx 20rpx;
+  padding: 6rpx 18rpx;
   border-radius: var(--r-tag);
   font-size: 22rpx;
   font-weight: 600;
-  letter-spacing: 0.5rpx;
 }
-.tag-pending   { background: #FFF3CD; color: #7D5A00; }
-.tag-confirmed { background: #D1F0FF; color: #005F8A; }
-.tag-done      { background: #D4F5E2; color: #1A6B3A; }
-.tag-cancelled { background: #FFE4E8; color: #8B1A2A; }
+.tag-pending   { background: var(--c-yellow-pale); color: #8A6700; }
+.tag-confirmed { background: var(--c-teal-pale);   color: #0F6A5E; }
+.tag-done      { background: #D4F5E2;              color: #1A6B3A; }
+.tag-cancelled { background: var(--c-accent-pale); color: #991B1B; }
 
-/* ── 状态标签（旧命名兼容）── */
-.status-tag { display: inline-flex; align-items: center; padding: 6rpx 20rpx; border-radius: var(--r-tag); font-size: 22rpx; font-weight: 600; }
-.status-pending   { background: #FFF3CD; color: #7D5A00; }
-.status-confirmed { background: #D1F0FF; color: #005F8A; }
-.status-done      { background: #D4F5E2; color: #1A6B3A; }
-.status-cancelled { background: #FFE4E8; color: #8B1A2A; }
-
-/* ── 分割线 ── */
-.divider {
-  height: 1rpx;
-  background: var(--c-border-light);
-  margin: 20rpx 0;
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 18rpx;
+  border-radius: var(--r-tag);
+  font-size: 22rpx;
+  font-weight: 600;
 }
+.status-pending   { background: var(--c-yellow-pale); color: #8A6700; }
+.status-confirmed { background: var(--c-teal-pale);   color: #0F6A5E; }
+.status-done      { background: #D4F5E2;              color: #1A6B3A; }
+.status-cancelled { background: var(--c-accent-pale); color: #991B1B; }
 
-/* ── 空状态 ── */
+/* ============================================
+   分割线 / 空状态
+   ============================================ */
+
+.divider { height: 1rpx; background: var(--c-border-light); margin: 20rpx 0; }
+
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -202,11 +374,10 @@ page {
   padding: 100rpx 40rpx;
   gap: 20rpx;
 }
-.empty-state .empty-icon { font-size: 100rpx; opacity: 0.5; }
-.empty-state .empty-text { font-size: 30rpx; color: var(--c-text-sub); font-weight: 500; }
+.empty-state .empty-icon { font-size: 100rpx; opacity: 0.4; }
+.empty-state .empty-text { font-size: 30rpx; color: var(--c-text-sub); font-weight: 600; }
 .empty-state .empty-hint { font-size: 24rpx; color: var(--c-text-hint); }
 
-/* ── 加载状态 ── */
 .loading-wrap {
   display: flex;
   align-items: center;
@@ -217,40 +388,36 @@ page {
   gap: 12rpx;
 }
 
-/* ── 渐变大标题横幅（各页顶部用）── */
+/* ============================================
+   页面顶部横幅
+   ============================================ */
+
 .page-banner {
-  background: var(--grad-deep);
-  padding: 48rpx 40rpx 56rpx;
-  position: relative;
-  overflow: hidden;
-}
-.page-banner::after {
-  content: '🐾 ✨ 🐾 ✨ 🐾';
-  position: absolute;
-  bottom: 12rpx;
-  right: 20rpx;
-  font-size: 24rpx;
-  opacity: 0.25;
-  letter-spacing: 8rpx;
+  background: var(--c-bg-card);
+  padding: 40rpx 40rpx 32rpx;
+  border-bottom: 1rpx solid var(--c-border-light);
 }
 .page-banner .banner-title {
   font-size: 44rpx;
   font-weight: 800;
-  color: #fff;
-  letter-spacing: 1rpx;
+  color: var(--c-text-h);
   display: block;
   margin-bottom: 8rpx;
+  letter-spacing: -0.5rpx;
 }
 .page-banner .banner-sub {
   font-size: 26rpx;
-  color: rgba(255,255,255,0.7);
+  color: var(--c-text-sub);
   display: block;
 }
 
-/* ── 输入框通用 ── */
+/* ============================================
+   通用输入框
+   ============================================ */
+
 .input-base {
   width: 100%;
-  background: var(--c-bg);
+  background: #FFFFFF;
   border: 2rpx solid var(--c-border);
   border-radius: var(--r-input);
   padding: 0 24rpx;
@@ -258,9 +425,11 @@ page {
   color: var(--c-text-body);
   box-sizing: border-box;
 }
-.input-base:focus { border-color: var(--c-primary-light); }
 
-/* ── 浮动操作按钮 ── */
+/* ============================================
+   浮动操作按钮
+   ============================================ */
+
 .fab {
   position: fixed;
   right: 40rpx;
@@ -268,13 +437,14 @@ page {
   width: 104rpx;
   height: 104rpx;
   border-radius: 50%;
-  background: var(--grad-primary);
-  color: #fff;
+  background: var(--c-yellow);
+  color: var(--c-primary);
   font-size: 60rpx;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-float);
+  box-shadow: var(--shadow-yellow);
   line-height: 1;
   z-index: 50;
 }

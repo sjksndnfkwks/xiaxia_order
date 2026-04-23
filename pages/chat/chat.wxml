@@ -5,40 +5,55 @@
     scroll-y
     scroll-into-view="{{scrollId}}"
     scroll-with-animation
-    style="bottom: {{inputBarHeight}}px;"
   >
     <view style="height: 24rpx;"></view>
     <block wx:for="{{messages}}" wx:key="_id">
+      <view class="time-separator" wx:if="{{item.showTime}}">
+        <text>{{item.timeLabel}}</text>
+      </view>
       <chat-bubble
         id="msg-{{item._id}}"
         msg="{{item}}"
         isSelf="{{item.senderId === myOpenid}}"
         avatarUrl="{{item.senderId === myOpenid ? myAvatar : adminAvatar}}"
+        multiSelect="{{multiSelect}}"
+        selected="{{item.selected}}"
+        bind:longpress="onBubbleLongPress"
+        bind:select="onBubbleSelect"
+        bind:openmerged="onOpenMerged"
       />
     </block>
     <view id="msg-bottom" style="height: 20rpx;"></view>
   </scroll-view>
 
-  <!-- 输入工具栏 -->
-  <view class="input-bar" style="padding-bottom: {{safeBottom}}px;">
-    <!-- 语音/文字切换 -->
+  <!-- 关闭面板遮罩 -->
+  <view class="panel-mask" wx:if="{{showEmoji || showExtra}}" bindtap="closePanels"></view>
+
+  <!-- 引用预览条 -->
+  <view class="quote-bar" wx:if="{{quotingMsg && !multiSelect}}">
+    <text class="quote-bar-label">引用：</text>
+    <text class="quote-bar-content">{{quotingMsg.content || '[媒体消息]'}}</text>
+    <view class="quote-bar-close" bindtap="clearQuote">✕</view>
+  </view>
+
+  <!-- 输入工具栏（多选模式下隐藏） -->
+  <view class="input-bar" wx:if="{{!multiSelect}}">
     <view class="icon-btn" bindtap="toggleVoice">
-      <text>{{voiceMode ? '⌨️' : '🎤'}}</text>
+      <text>{{voiceMode ? '⌨️' : '🎙'}}</text>
     </view>
 
-    <!-- 文字输入 -->
     <input
       wx:if="{{!voiceMode}}"
       class="text-input"
       value="{{inputText}}"
-      placeholder="说点什么..."
+      placeholder=""
+      placeholder-class="input-placeholder"
       bindinput="onInput"
       bindconfirm="sendText"
       confirm-type="send"
       adjust-position
     />
 
-    <!-- 语音录制按钮 -->
     <view
       wx:else
       class="voice-btn {{recording ? 'recording' : ''}}"
@@ -49,40 +64,78 @@
       <text>{{recording ? '松开发送' : '按住说话'}}</text>
     </view>
 
-    <!-- 表情 -->
     <view class="icon-btn" bindtap="toggleEmoji">
       <text>😊</text>
     </view>
 
-    <!-- 更多（图片/视频）-->
     <view class="icon-btn" bindtap="toggleExtra">
-      <text>➕</text>
+      <text>⊕</text>
     </view>
 
-    <!-- 发送按钮 -->
-    <view class="send-btn" bindtap="sendText" wx:if="{{inputText.length > 0}}">发送</view>
+    <view class="send-btn" bindtap="sendText" wx:if="{{inputText.length > 0}}">
+      <text>发送</text>
+    </view>
+  </view>
+
+  <!-- 多选操作栏 -->
+  <view class="multiselect-bar" wx:if="{{multiSelect}}">
+    <view class="ms-cancel" bindtap="exitMultiSelect">取消</view>
+    <text class="ms-count">已选 {{selectedIds.length}} 条</text>
+    <view class="ms-action ms-merge {{selectedIds.length < 2 ? 'ms-disabled' : ''}}" bindtap="mergeSelected">合并</view>
+    <view class="ms-action ms-delete {{selectedIds.length === 0 ? 'ms-disabled' : ''}}" bindtap="deleteSelected">删除</view>
+  </view>
+
+  <!-- 长按浮层菜单 -->
+  <view class="msg-menu-mask" wx:if="{{menuShow}}" bindtap="closeMenu" catchtouchmove="noop"></view>
+  <view class="msg-menu" wx:if="{{menuShow}}" style="left: {{menuX}}px; top: {{menuY}}px;">
+    <view class="menu-item" bindtap="menuCopy" wx:if="{{menuCanCopy}}">复制</view>
+    <view class="menu-item" bindtap="menuQuote">引用</view>
+    <view class="menu-item" bindtap="menuMultiSelect">多选</view>
+    <view class="menu-item menu-danger" bindtap="menuDelete">删除</view>
+  </view>
+
+  <!-- 合并消息详情弹窗 -->
+  <view class="merged-mask" wx:if="{{mergedDetail}}" bindtap="closeMergedDetail">
+    <view class="merged-card" catchtap="noop">
+      <view class="merged-header">
+        <text class="merged-title">合并的 {{mergedDetail.items.length}} 条消息</text>
+        <view class="merged-close" bindtap="closeMergedDetail">✕</view>
+      </view>
+      <scroll-view class="merged-scroll" scroll-y>
+        <view class="merged-item" wx:for="{{mergedDetail.items}}" wx:key="index">
+          <text class="merged-sender">{{item.senderName}}</text>
+          <text class="merged-content">{{item.content}}</text>
+        </view>
+      </scroll-view>
+    </view>
   </view>
 
   <!-- 表情面板 -->
-  <view class="emoji-panel" wx:if="{{showEmoji}}">
-    <view
-      class="emoji-item"
-      wx:for="{{emojiList}}"
-      wx:key="index"
-      bindtap="sendEmoji"
-      data-emoji="{{item}}"
-    >{{item}}</view>
+  <view class="emoji-panel" wx:if="{{showEmoji && !multiSelect}}">
+    <scroll-view class="emoji-scroll" scroll-y>
+      <view class="emoji-grid">
+        <view
+          class="emoji-item"
+          wx:for="{{emojiList}}"
+          wx:key="index"
+          bindtap="insertEmoji"
+          data-emoji="{{item}}"
+        >{{item}}</view>
+      </view>
+    </scroll-view>
+    <!-- 退格键固定在底部 -->
+    <view class="emoji-toolbar">
+      <view class="emoji-backspace-btn" bindtap="deleteLastChar">⌫</view>
+    </view>
   </view>
 
-  <!-- 更多面板（图片/视频）-->
-  <view class="extra-panel" wx:if="{{showExtra}}">
+  <!-- 更多面板 -->
+  <view class="extra-panel" wx:if="{{showExtra && !multiSelect}}">
     <view class="extra-btn" bindtap="sendImage">
-      <text class="extra-icon">🖼</text>
-      <text class="extra-label">图片</text>
+      <view class="extra-label">图片</view>
     </view>
     <view class="extra-btn" bindtap="sendVideo">
-      <text class="extra-icon">🎬</text>
-      <text class="extra-label">视频</text>
+      <view class="extra-label">视频</view>
     </view>
   </view>
 </view>

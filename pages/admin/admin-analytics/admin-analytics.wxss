@@ -81,12 +81,12 @@
 
 .rank-bar {
   height: 100%;
-  background: var(--grad-primary);
+  background: var(--c-primary);
   border-radius: 10rpx;
   transition: width 0.5s ease;
 }
 
-.snack-bar { background: linear-gradient(90deg, #FF6B9D, #FF8FB5); }
+.snack-bar { background: var(--c-accent); }
 
 .rank-qty {
   font-size: 26rpx;

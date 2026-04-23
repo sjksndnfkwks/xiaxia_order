@@ -36,7 +36,7 @@ Page({
       editingId: null,
       dateType: 'yearly',
       pickerDateFull: '',
-      form: { date: '', title: '', letterContent: '', flowerImageUrl: '', active: true }
+      form: { date: '', title: '', letterTo: '', letterContent: '', letterFrom: '', flowerImageUrl: '', active: true }
     })
   },
 
@@ -51,7 +51,9 @@ Page({
       form: {
         date: item.date,
         title: item.title,
-        letterContent: item.letterContent,
+        letterTo: item.letterTo || '',
+        letterContent: item.letterContent || '',
+        letterFrom: item.letterFrom || '',
         flowerImageUrl: item.flowerImageUrl || '',
         active: item.active
       }
@@ -103,12 +105,13 @@ Page({
     const { form, editingId } = this.data
     if (!form.date) { wx.showToast({ title: '请选择日期', icon: 'none' }); return }
     if (!form.title.trim()) { wx.showToast({ title: '请填写标题', icon: 'none' }); return }
-    if (!form.letterContent.trim()) { wx.showToast({ title: '请写一封信', icon: 'none' }); return }
 
     const data = {
       date: form.date,
       title: form.title.trim(),
+      letterTo: form.letterTo.trim(),
       letterContent: form.letterContent.trim(),
+      letterFrom: form.letterFrom.trim(),
       flowerImageUrl: form.flowerImageUrl,
       active: true,
       updatedAt: db.serverDate()

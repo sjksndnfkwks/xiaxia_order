@@ -1,0 +1,16 @@
+<view class="anb-mask" wx:if="{{show}}" bindtap="onClose">
+  <view class="anb-card {{entered ? 'entered' : ''}}" catchtap="noop">
+    <view class="anb-close" bindtap="onClose">✕</view>
+    <image class="anb-img" src="{{announcement.imageUrl}}" mode="widthFix" wx:if="{{announcement.imageUrl}}" bindtap="previewImg" />
+    <view class="anb-body">
+      <view class="anb-meta">
+        <text class="anb-date">{{announcement.publishDate}}</text>
+        <text class="anb-tag">公告</text>
+      </view>
+      <text class="anb-title">{{announcement.title}}</text>
+      <scroll-view class="anb-content-scroll" scroll-y>
+        <text class="anb-content">{{announcement.content}}</text>
+      </scroll-view>
+    </view>
+  </view>
+</view>

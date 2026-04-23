@@ -11,13 +11,17 @@
     "pages/admin/admin-orders/admin-orders",
     "pages/admin/admin-analytics/admin-analytics",
     "pages/admin/admin-anniversaries/admin-anniversaries",
-    "pages/admin/admin-categories/admin-categories"
+    "pages/admin/admin-categories/admin-categories",
+    "pages/wishlist/wishlist",
+    "pages/announcements/announcements",
+    "pages/admin/admin-announcements/admin-announcements"
   ],
   "tabBar": {
-    "color": "#7B8AC4",
-    "selectedColor": "#6B9FFF",
-    "backgroundColor": "#0D1F6E",
-    "borderStyle": "black",
+    "custom": true,
+    "color": "#A8A6B8",
+    "selectedColor": "#1D1B3B",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/food/food",
@@ -46,11 +50,11 @@
     ]
   },
   "window": {
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#0D1F6E",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#FFFFFF",
     "navigationBarTitleText": "虾虾的626小食堂",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#F2F5FF"
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FDFBF5"
   },
   "usingComponents": {},
   "sitemapLocation": "sitemap.json",

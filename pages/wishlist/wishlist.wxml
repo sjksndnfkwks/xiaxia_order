@@ -1,0 +1,92 @@
+<view class="wish-page">
+
+  <view class="wish-header">
+    <text class="wish-header-title">wishlist</text>
+    <text class="wish-header-sub">有什么想吃的呀 · 共 {{items.length}} 条</text>
+  </view>
+
+  <scroll-view class="wish-list" scroll-y>
+    <view class="loading-wrap" wx:if="{{loading}}"><text>加载中...</text></view>
+
+    <view wx:elif="{{items.length === 0}}" class="empty-wrap">
+      <text class="empty-title">还没有想吃的</text>
+      <text class="empty-sub">点下方按钮添加一条</text>
+    </view>
+
+    <view wx:else>
+      <view class="wish-row" wx:for="{{items}}" wx:key="_id" bindtap="openItem" data-item="{{item}}">
+        <view class="wish-rank">{{index + 1}}</view>
+        <view class="wish-info">
+          <view class="wish-name-row">
+            <text class="wish-name">{{item.name}}</text>
+            <text class="wish-cat" wx:if="{{item.categoryName}}">{{item.categoryName}}</text>
+          </view>
+          <view class="wish-bar-wrap">
+            <view class="wish-bar" style="width: {{item.barPct}}%"></view>
+          </view>
+          <!-- 表态头像堆叠 -->
+          <view class="avatars-row" wx:if="{{item.topWants.length > 0}}">
+            <view class="avatar-stack">
+              <image
+                wx:for="{{item.topWants}}"
+                wx:for-item="w"
+                wx:key="openid"
+                class="stack-avatar"
+                src="{{w.avatar || '/assets/images/stitch-wave.png'}}"
+                mode="aspectFill"
+              />
+            </view>
+            <text class="extra-count" wx:if="{{item.extraCount > 0}}">+{{item.extraCount}}</text>
+          </view>
+        </view>
+        <view class="wish-level">
+          <text class="wish-level-num">{{item.totalLevel}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view style="height: 180rpx;"></view>
+  </scroll-view>
+
+  <view class="fab" bindtap="addItem" wx:if="{{!showForm}}">＋</view>
+
+  <!-- 条目操作弹层（点开某条后显示） -->
+  <view class="form-mask" wx:if="{{showForm}}" bindtap="closeForm">
+    <view class="form-sheet" catchtap="noop">
+      <view class="form-header">
+        <text class="form-title">{{formTitle}}</text>
+        <text class="form-close" bindtap="closeForm">✕</text>
+      </view>
+
+      <!-- 添加/编辑条目时才显示名称和分类 -->
+      <block wx:if="{{mode === 'addItem' || mode === 'editItem'}}">
+        <view class="form-field">
+          <text class="field-label">名称</text>
+          <input class="field-input" value="{{form.name}}" bindinput="onInput" data-key="name" maxlength="30" />
+        </view>
+
+        <view class="form-field">
+          <text class="field-label">分类</text>
+          <picker mode="selector" range="{{categoryNames}}" value="{{form.categoryIndex}}" bindchange="onCategoryChange">
+            <view class="field-input picker-field">{{categoryNames[form.categoryIndex] || '选择分类'}}</view>
+          </picker>
+        </view>
+      </block>
+
+      <!-- 设置自己想吃程度 -->
+      <view class="form-field" wx:if="{{mode !== 'editItemOnly'}}">
+        <text class="field-label">{{mode === 'addItem' ? '你有多想吃' : '有多想吃'}}</text>
+        <input class="field-input" type="digit" value="{{form.level}}" bindinput="onInput" data-key="level" placeholder="输入数字，没有上限" />
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="form-btns">
+        <view class="btn-delete" wx:if="{{canDelete}}" bindtap="deleteItem">删除</view>
+        <view class="btn-edit" wx:if="{{canEditItem && mode === 'itemView'}}" bindtap="switchToEditItem">编辑</view>
+        <view class="btn-edit btn-promote" wx:if="{{isAdmin && (mode === 'itemView' || mode === 'editItem')}}" bindtap="promoteToMenu">加到菜单</view>
+        <view class="btn-save" bindtap="saveItem">保存</view>
+      </view>
+    </view>
+  </view>
+
+</view>

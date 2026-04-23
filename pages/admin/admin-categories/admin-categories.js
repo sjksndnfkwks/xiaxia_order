@@ -55,7 +55,6 @@ Page({
   async saveCat() {
     const { form, editingId, activeTab } = this.data
     if (!form.name.trim()) { wx.showToast({ title: '请填写名称', icon: 'none' }); return }
-    if (!form.icon.trim()) { wx.showToast({ title: '请填写图标', icon: 'none' }); return }
 
     const data = { name: form.name.trim(), icon: form.icon.trim(), type: activeTab }
     wx.showLoading({ title: '保存中...' })

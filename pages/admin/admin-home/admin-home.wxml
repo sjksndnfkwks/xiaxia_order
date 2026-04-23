@@ -1,7 +1,7 @@
 <view class="admin-home">
   <!-- 欢迎头部 -->
   <view class="welcome-banner">
-    <text class="welcome-title">⚙️ 管理后台</text>
+    <text class="welcome-title">管理后台</text>
     <text class="welcome-sub">你好，管理员！</text>
   </view>
 
@@ -24,7 +24,6 @@
   <!-- 功能入口 -->
   <view class="menu-card">
     <view class="menu-item" bindtap="goCategories">
-      <text class="menu-icon">🗂</text>
       <view class="menu-info">
         <text class="menu-title">分类管理</text>
         <text class="menu-desc">新增、编辑、删除菜品/零食分类</text>
@@ -33,7 +32,6 @@
     </view>
     <view class="menu-divider"></view>
     <view class="menu-item" bindtap="goMenu">
-      <text class="menu-icon">🍽</text>
       <view class="menu-info">
         <text class="menu-title">菜品/零食管理</text>
         <text class="menu-desc">添加、编辑、删除菜品和零食</text>
@@ -42,7 +40,6 @@
     </view>
     <view class="menu-divider"></view>
     <view class="menu-item" bindtap="goOrders">
-      <text class="menu-icon">📋</text>
       <view class="menu-info">
         <text class="menu-title">订单管理</text>
         <text class="menu-desc">查看和处理所有订单</text>
@@ -51,7 +48,6 @@
     </view>
     <view class="menu-divider"></view>
     <view class="menu-item" bindtap="goAnalytics">
-      <text class="menu-icon">📊</text>
       <view class="menu-info">
         <text class="menu-title">用户喜好分析</text>
         <text class="menu-desc">查看各菜品点单排行</text>
@@ -60,7 +56,6 @@
     </view>
     <view class="menu-divider"></view>
     <view class="menu-item" bindtap="goAnniversaries">
-      <text class="menu-icon">💐</text>
       <view class="menu-info">
         <text class="menu-title">纪念日管理</text>
         <text class="menu-desc">设置惊喜日期、花束和信件</text>
@@ -68,8 +63,15 @@
       <text class="menu-arrow">›</text>
     </view>
     <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="goAnnouncements">
+      <view class="menu-info">
+        <text class="menu-title">公告管理</text>
+        <text class="menu-desc">发布、编辑、删除公告</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-divider"></view>
     <view class="menu-item" bindtap="goChat">
-      <text class="menu-icon">💬</text>
       <view class="menu-info">
         <text class="menu-title">聊天消息</text>
         <text class="menu-desc">查看和回复用户消息</text>
@@ -80,7 +82,6 @@
 
   <!-- 订阅消息管理 -->
   <view class="subscribe-card" bindtap="refreshSubscribe">
-    <text class="sub-icon">🔔</text>
     <view class="sub-info">
       <text class="sub-title">续签通知权限</text>
       <text class="sub-desc">点击续签，确保收到订单和消息推送</text>

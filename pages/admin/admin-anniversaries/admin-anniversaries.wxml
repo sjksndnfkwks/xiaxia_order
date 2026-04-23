@@ -1,7 +1,7 @@
 <!-- 列表 -->
 <scroll-view class="ann-list" scroll-y wx:if="{{!showForm}}">
   <view class="tip-card">
-    <text class="tip-text">💡 日期格式：每年重复填 MM-DD（如 06-01），特定年份填 YYYY-MM-DD（如 2026-02-14）</text>
+    <text class="tip-text">日期格式：每年重复填 MM-DD（如 06-01），特定年份填 YYYY-MM-DD（如 2026-02-14）</text>
   </view>
 
   <view class="loading-wrap" wx:if="{{loading}}"><text>加载中...</text></view>
@@ -9,7 +9,7 @@
     <view class="ann-item" wx:for="{{anniversaries}}" wx:key="_id">
       <image class="ann-img" src="{{item.flowerImageUrl || '/assets/images/flower-default.png'}}" mode="aspectFill" />
       <view class="ann-info">
-        <text class="ann-date">📅 {{item.date}}</text>
+        <text class="ann-date">{{item.date}}</text>
         <text class="ann-title-text">{{item.title}}</text>
         <text class="ann-preview">{{item.letterContent.slice(0,30)}}{{item.letterContent.length > 30 ? '...' : ''}}</text>
         <view class="active-tag {{item.active ? 'on' : 'off'}}">{{item.active ? '已启用' : '已停用'}}</view>
@@ -44,7 +44,6 @@
     <view class="img-upload" bindtap="uploadImg">
       <image wx:if="{{form.flowerImageUrl}}" src="{{form.flowerImageUrl}}" mode="aspectFit" class="upload-preview" />
       <view wx:else class="upload-placeholder">
-        <text class="upload-icon">💐</text>
         <text class="upload-text">点击上传花束图片</text>
       </view>
     </view>
@@ -73,11 +72,20 @@
     <input class="field-input" value="{{form.title}}" bindinput="onInput" data-key="title" placeholder="如：在一起一周年" />
   </view>
 
-  <!-- 信件正文 -->
+  <!-- 信件 -->
   <view class="field-card">
-    <text class="field-label">信件内容</text>
-    <textarea class="letter-input" value="{{form.letterContent}}" bindinput="onInput" data-key="letterContent" placeholder="写下你想对她说的话..." maxlength="500" />
+    <text class="field-label">信件（选填）</text>
+    <view class="letter-field-row">
+      <text class="letter-prefix">To</text>
+      <input class="letter-inline-input" value="{{form.letterTo}}" bindinput="onInput" data-key="letterTo" placeholder="收信人" />
+      <text class="letter-suffix">：</text>
+    </view>
+    <textarea class="letter-input" value="{{form.letterContent}}" bindinput="onInput" data-key="letterContent" placeholder="写下你想说的话..." maxlength="500" />
     <text class="char-count">{{form.letterContent.length}}/500</text>
+    <view class="letter-field-row letter-from-row">
+      <text class="letter-prefix">From</text>
+      <input class="letter-inline-input" value="{{form.letterFrom}}" bindinput="onInput" data-key="letterFrom" placeholder="署名" />
+    </view>
   </view>
 
   <view class="form-submit" bindtap="saveAnn">保存纪念日</view>

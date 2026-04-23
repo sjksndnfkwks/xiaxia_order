@@ -10,7 +10,7 @@
     <view class="add-btn" wx:else catchtap="onPlus">＋</view>
   </view>
   <view class="note-row" wx:if="{{quantity > 0}}" catchtap="editNote">
-    <text class="note-text" wx:if="{{note}}">📝 {{note}}</text>
+    <text class="note-text" wx:if="{{note}}">{{note}}</text>
     <text class="note-text hint" wx:else>+ 加备注</text>
   </view>
 </view>

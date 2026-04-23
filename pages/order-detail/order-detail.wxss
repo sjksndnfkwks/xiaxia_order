@@ -5,7 +5,7 @@
 }
 
 .status-card {
-  background: var(--grad-deep);
+  background: #FFFFFF;
   border-radius: var(--r-card);
   padding: 48rpx 40rpx;
   display: flex;
@@ -13,18 +13,8 @@
   align-items: center;
   gap: 12rpx;
   margin-bottom: 24rpx;
-  position: relative;
-  overflow: hidden;
-}
-
-.status-card::after {
-  content: '🐾 ✨';
-  position: absolute;
-  bottom: 12rpx;
-  right: 20rpx;
-  font-size: 24rpx;
-  opacity: 0.2;
-  letter-spacing: 6rpx;
+  box-shadow: var(--shadow-card);
+  border: 1rpx solid var(--c-border-light);
 }
 
 .status-icon { font-size: 80rpx; }
@@ -32,17 +22,17 @@
 .status-label {
   font-size: 40rpx;
   font-weight: 800;
-  color: #fff;
+  color: var(--c-text-h);
 }
 
 .order-no-text {
   font-size: 24rpx;
-  color: rgba(255,255,255,0.8);
+  color: var(--c-text-sub);
 }
 
 .order-time-text {
   font-size: 22rpx;
-  color: rgba(255,255,255,0.6);
+  color: var(--c-text-hint);
 }
 
 .info-card {
@@ -68,12 +58,12 @@
 
 .overall-note-text {
   font-size: 28rpx;
-  color: var(--c-accent);
+  color: #E65100;
   line-height: 1.8;
-  background: rgba(255, 107, 157, 0.08);
+  background: #FFFDE7;
   border-radius: 12rpx;
   padding: 20rpx 24rpx;
-  border: 1rpx solid rgba(255, 107, 157, 0.2);
+  border: 1rpx solid #FFE082;
 }
 
 .item-row {
@@ -109,9 +99,101 @@
 
 .item-note {
   font-size: 22rpx;
-  color: var(--c-accent);
-  background: rgba(255, 107, 157, 0.1);
+  color: #E65100;
+  background: #FFFDE7;
   border-radius: 8rpx;
   padding: 4rpx 12rpx;
   display: inline-block;
+  border: 1rpx solid #FFE082;
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex-shrink: 0;
+}
+
+.qty-btn {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: var(--c-bg);
+  border: 1rpx solid var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: var(--c-primary);
+  font-weight: 700;
+}
+
+.qty-num {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--c-text-h);
+  min-width: 40rpx;
+  text-align: center;
+}
+
+.note-edit-input {
+  width: 100%;
+  min-height: 100rpx;
+  background: #FFFDE7;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  color: var(--c-text-body);
+  border: 1rpx solid #FFE082;
+  box-sizing: border-box;
+  line-height: 1.6;
+}
+
+.cancelled-card {
+  background: #f5f5f5;
+  border-color: var(--c-border-light);
+}
+
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx 32rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: var(--c-bg-card);
+  border-top: 1rpx solid var(--c-border-light);
+  display: flex;
+  gap: 24rpx;
+  box-shadow: 0 -2rpx 12rpx rgba(0,0,0,0.06);
+}
+
+.btn-cancel {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 44rpx;
+  border: 1rpx solid var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  color: var(--c-text-sub);
+  font-weight: 600;
+}
+
+.btn-save {
+  flex: 2;
+  height: 88rpx;
+  border-radius: 44rpx;
+  background: var(--c-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  color: #fff;
+  font-weight: 700;
+}
+
+.btn-save.disabled {
+  background: var(--c-border);
+  color: var(--c-text-hint);
 }

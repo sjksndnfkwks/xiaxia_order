@@ -1,0 +1,19 @@
+<view class="ann-page">
+  <scroll-view class="ann-scroll" scroll-y>
+    <view class="loading-wrap" wx:if="{{loading}}"><text>加载中...</text></view>
+    <view class="empty-wrap" wx:elif="{{list.length === 0}}">
+      <text>暂无公告</text>
+    </view>
+    <view wx:else>
+      <view class="ann-card" wx:for="{{list}}" wx:key="_id">
+        <view class="ann-meta">
+          <text class="ann-date">{{item.publishDateStr}}</text>
+        </view>
+        <text class="ann-title">{{item.title}}</text>
+        <image class="ann-image" src="{{item.imageUrl}}" mode="widthFix" wx:if="{{item.imageUrl}}" bindtap="previewImg" data-url="{{item.imageUrl}}" />
+        <text class="ann-content">{{item.content}}</text>
+      </view>
+    </view>
+    <view style="height: 60rpx;"></view>
+  </scroll-view>
+</view>

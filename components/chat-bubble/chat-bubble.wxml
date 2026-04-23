@@ -1,30 +1,63 @@
-<view class="bubble-row {{isSelf ? 'self' : 'other'}}">
-  <image class="avatar" src="{{avatarUrl}}" mode="aspectFill" wx:if="{{!isSelf}}" />
+<view class="msg-row {{multiSelect ? 'msg-row-ms' : ''}} {{selected && multiSelect ? 'msg-row-checked' : ''}}">
 
-  <view class="bubble-wrap">
-    <!-- 文字/表情 -->
-    <view class="bubble text-bubble" wx:if="{{msg.type === 'text' || msg.type === 'emoji'}}">
-      <text class="bubble-text" user-select>{{msg.content}}</text>
-    </view>
-
-    <!-- 图片 -->
-    <view class="bubble img-bubble" wx:elif="{{msg.type === 'image'}}" bindtap="previewImg">
-      <image src="{{msg.mediaUrl}}" mode="aspectFill" class="msg-img" />
-    </view>
-
-    <!-- 视频 -->
-    <view class="bubble video-bubble" wx:elif="{{msg.type === 'video'}}">
-      <video src="{{msg.mediaUrl}}" class="msg-video" object-fit="cover" show-play-btn />
-    </view>
-
-    <!-- 语音 -->
-    <view class="bubble voice-bubble" wx:elif="{{msg.type === 'voice'}}" bindtap="playVoice">
-      <text class="voice-icon">{{playing ? '🔊' : '🎵'}}</text>
-      <text class="voice-duration">{{msg.duration}}"</text>
-    </view>
-
-    <text class="bubble-time">{{timeStr}}</text>
+  <!-- 多选勾选框（始终在最左侧） -->
+  <view class="select-check {{selected ? 'checked' : ''}}" wx:if="{{multiSelect}}" bindtap="onTap">
+    <text class="check-icon" wx:if="{{selected}}">✓</text>
   </view>
 
-  <image class="avatar self-avatar" src="{{avatarUrl}}" mode="aspectFill" wx:if="{{isSelf}}" />
+  <view
+    class="bubble-row {{isSelf ? 'self' : 'other'}}"
+    bindtouchstart="onHoldStart"
+    bindtouchend="onHoldEnd"
+    bindtouchcancel="onHoldEnd"
+    bindtouchmove="onHoldEnd"
+    bindtap="onTap"
+  >
+
+    <image class="avatar" src="{{avatarUrl}}" mode="aspectFill" wx:if="{{avatarUrl}}" />
+
+    <view class="bubble-wrap">
+
+      <!-- 已撤回 -->
+      <view class="bubble recalled-bubble" wx:if="{{msg.recalled}}">
+        <text class="recalled-text">{{isSelf ? '你撤回了一条消息' : '对方撤回了一条消息'}}</text>
+      </view>
+
+      <!-- 文字/表情（引用在下方） -->
+      <block wx:elif="{{msg.type === 'text' || msg.type === 'emoji'}}">
+        <view class="bubble text-bubble">
+          <text class="bubble-text">{{msg.content}}</text>
+        </view>
+        <view class="quote-block" wx:if="{{msg.quotedMsg}}">
+          <text class="quote-text">{{msg.quotedMsg.content || '[媒体消息]'}}</text>
+        </view>
+      </block>
+
+      <!-- 合并消息 -->
+      <view class="bubble merged-bubble" wx:elif="{{msg.type === 'merged'}}" bindtap="openMerged">
+        <text class="merged-bubble-title">合并的 {{msg.mergedItems.length}} 条消息</text>
+        <view class="merged-bubble-preview" wx:for="{{msg.mergedPreview}}" wx:for-item="mi" wx:key="idx">
+          <text class="merged-preview-text">{{mi.senderName}}：{{mi.content}}</text>
+        </view>
+        <text class="merged-bubble-more" wx:if="{{msg.mergedItems.length > 3}}">···</text>
+      </view>
+
+      <!-- 图片 -->
+      <view class="bubble img-bubble" wx:elif="{{msg.type === 'image'}}" bindtap="previewImg">
+        <image src="{{msg.mediaUrl}}" mode="aspectFill" class="msg-img" />
+      </view>
+
+      <!-- 视频 -->
+      <view class="bubble video-bubble" wx:elif="{{msg.type === 'video'}}">
+        <video src="{{msg.mediaUrl}}" class="msg-video" object-fit="cover" show-play-btn />
+      </view>
+
+      <!-- 语音 -->
+      <view class="bubble voice-bubble" wx:elif="{{msg.type === 'voice'}}" bindtap="playVoice">
+        <text class="voice-icon">{{playing ? '播放中' : '语音'}}</text>
+        <text class="voice-duration">{{msg.duration}}"</text>
+      </view>
+
+    </view>
+  </view>
 </view>

@@ -1,19 +1,75 @@
+.food-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ── 顶部搜索栏 ── */
+.food-search-bar {
+  background: #FFFFFF;
+  padding: 16rpx 24rpx;
+  border-bottom: 1rpx solid var(--c-border-light);
+  flex-shrink: 0;
+}
+
+.search-capsule {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 50rpx;
+  padding: 14rpx 20rpx;
+  gap: 12rpx;
+  box-shadow: var(--shadow-fuzzy);
+  border: 1rpx solid var(--c-border-light);
+}
+
+.search-mag { font-size: 32rpx; flex-shrink: 0; }
+
+.search-input {
+  flex: 1;
+  font-size: 26rpx;
+  color: var(--c-text-body);
+  height: 44rpx;
+  line-height: 44rpx;
+}
+
+.search-placeholder {
+  color: var(--c-text-hint);
+  font-size: 24rpx;
+}
+
+.search-avatar-wrap {
+  flex-shrink: 0;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: var(--c-primary-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-stitch { font-size: 28rpx; }
+
+/* ── 双栏容器 ── */
 .food-container {
   display: flex;
-  height: 100vh;
+  flex: 1;
+  min-height: 0;
   background: var(--c-bg);
 }
 
 /* ── 左侧分类导航 ── */
 .cat-sidebar {
   width: 168rpx;
-  background: var(--c-bg-deep);
+  background: #FFFFFF;
   flex-shrink: 0;
-  height: 100vh;
+  height: 100%;
+  border-right: 1rpx solid var(--c-border-light);
 }
 
 .cat-item {
-  padding: 28rpx 12rpx;
+  padding: 24rpx 10rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24,39 +80,37 @@
 }
 
 .cat-item.active {
-  background: var(--c-bg);
-  border-left-color: var(--c-primary-light);
+  background: var(--c-bg-cream);
+  border-left-color: var(--c-yellow);
 }
 
-.cat-icon {
-  font-size: 36rpx;
-}
+.cat-icon { font-size: 34rpx; }
 
 .cat-name {
-  font-size: 22rpx;
-  color: var(--c-text-hint);
+  font-size: 26rpx;
+  color: var(--c-text-sub);
   text-align: center;
   line-height: 1.3;
 }
 
 .cat-item.active .cat-name {
   color: var(--c-primary);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* ── 右侧菜品列表 ── */
 .food-list {
   flex: 1;
-  height: 100vh;
+  height: 100%;
   background: var(--c-bg);
 }
 
 .cat-section-title {
   font-size: 26rpx;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--c-text-sub);
   background: var(--c-bg);
-  padding: 20rpx 32rpx 12rpx;
+  padding: 18rpx 28rpx 10rpx;
   letter-spacing: 1rpx;
 }
 
@@ -65,4 +119,10 @@
   text-align: center;
   color: var(--c-text-hint);
   font-size: 26rpx;
+}
+
+.search-empty {
+  padding: 80rpx 40rpx;
+  font-size: 28rpx;
+  color: var(--c-text-sub);
 }

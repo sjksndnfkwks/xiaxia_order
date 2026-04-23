@@ -14,7 +14,7 @@ const ORDER_STATUS = {
 }
 
 const ORDER_STATUS_TEXT = {
-  pending: '待确认',
+  pending: '已下单',
   confirmed: '已确认',
   done: '已完成',
   cancelled: '已取消'

@@ -80,7 +80,7 @@ Page({
       const orderData = {
         orderNo,
         userId: openid,
-        status: 'pending',
+        status: 'done',
         overallNote: overallNote.trim(),
         foodItems: foodItems.map(i => ({
           itemId: i.itemId,
@@ -116,8 +116,8 @@ Page({
       // 清空购物车
       cartStore.clear()
 
-      // 跳转到订单详情
-      wx.redirectTo({ url: `/pages/order-detail/order-detail?id=${orderId}` })
+      wx.showToast({ title: '下单成功！', icon: 'success', duration: 1500 })
+      setTimeout(() => wx.switchTab({ url: '/pages/food/food' }), 1500)
     } catch (e) {
       console.error('submit order error', e)
       wx.showToast({ title: '下单失败，请重试', icon: 'none' })

@@ -5,6 +5,17 @@
   background: var(--c-bg-card);
   border-bottom: 1rpx solid var(--c-border-light);
   gap: 20rpx;
+  position: relative;
+}
+
+/* ── 实验品标记 ── */
+.exp-badge {
+  position: absolute;
+  top: 12rpx;
+  left: 12rpx;
+  font-size: 22rpx;
+  opacity: 0.4;
+  z-index: 1;
 }
 
 .food-img {
@@ -24,8 +35,8 @@
 }
 
 .food-name {
-  font-size: 30rpx;
-  font-weight: 600;
+  font-size: 28rpx;
+  font-weight: 500;
   color: var(--c-text-h);
   white-space: nowrap;
   overflow: hidden;
@@ -41,19 +52,23 @@
   overflow: hidden;
 }
 
+/* ── 便签式备注 ── */
 .food-note-row {
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  background: rgba(255, 107, 157, 0.1);
+  gap: 6rpx;
+  background: #FFFDE7;
   border-radius: 8rpx;
   padding: 6rpx 12rpx;
-  border: 1rpx solid rgba(255, 107, 157, 0.2);
+  border: 1rpx solid #FFE082;
+  box-shadow: 2rpx 2rpx 0 rgba(255, 224, 130, 0.5);
 }
+
+.note-pin { font-size: 22rpx; flex-shrink: 0; }
 
 .food-note-text {
   font-size: 22rpx;
-  color: var(--c-accent);
+  color: #795548;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -63,20 +78,31 @@
 .note-edit {
   font-size: 22rpx;
   flex-shrink: 0;
+  opacity: 0.7;
 }
 
 .food-action {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12rpx;
+  position: relative;
+  width: 200rpx;
+  height: 136rpx;
   flex-shrink: 0;
 }
 
 .qty-control {
+  position: absolute;
+  top: 50%;
+  right: 60rpx;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  gap: 4rpx;
+}
+
+.add-btn {
+  position: absolute;
+  top: 50%;
+  right: 60rpx;
+  transform: translateY(-50%);
 }
 
 .qty-btn {
@@ -94,7 +120,7 @@
 .qty-btn.plus {
   background: var(--grad-primary);
   color: #fff;
-  box-shadow: 0 4rpx 12rpx rgba(27, 79, 216, 0.3);
+  box-shadow: 0 4rpx 12rpx rgba(91, 79, 216, 0.30);
 }
 
 .qty-btn.minus {
@@ -122,9 +148,18 @@
   font-size: 36rpx;
   font-weight: bold;
   line-height: 1;
-  box-shadow: 0 4rpx 12rpx rgba(27, 79, 216, 0.3);
+  box-shadow: 0 4rpx 12rpx rgba(91, 79, 216, 0.30);
 }
 
 .note-btn {
-  font-size: 32rpx;
+  position: absolute;
+  bottom: 4rpx;
+  right: 60rpx;
+  font-size: 20rpx;
+  color: var(--c-text-hint);
+  background: var(--c-bg);
+  border: 1rpx solid var(--c-border-light);
+  border-radius: 8rpx;
+  padding: 4rpx 10rpx;
+  line-height: 1.4;
 }

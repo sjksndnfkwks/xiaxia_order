@@ -15,14 +15,22 @@ Page({
     showExtra: false,
     scrollId: 'msg-bottom',
     emojiList: EMOJI_LIST,
-    inputBarHeight: 60,
-    safeBottom: 0
+    quotingMsg: null,
+    multiSelect: false,
+    selectedIds: [],
+    // 长按菜单
+    menuShow: false,
+    menuX: 0,
+    menuY: 0,
+    menuMsg: null,
+    menuCanCopy: false,
+    // 合并详情
+    mergedDetail: null
   },
 
   _watcher: null,
   _recorder: null,
-  _recorderPath: '',
-  _recorderDuration: 0,
+  _cancelled: false,
 
   async onLoad() {
     await app.waitLogin()
@@ -32,10 +40,19 @@ Page({
       myAvatar: userInfo?.avatarUrl || ''
     })
     this._startWatch()
+  },
 
-    // 获取安全区域
-    const sysInfo = wx.getSystemInfoSync()
-    this.setData({ safeBottom: sysInfo.safeArea ? sysInfo.screenHeight - sysInfo.safeArea.bottom : 0 })
+  onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 2, hidden: false })
+    }
+    const latestAvatar = app.globalData.userInfo?.avatarUrl || ''
+    if (latestAvatar !== this.data.myAvatar) {
+      this.setData({ myAvatar: latestAvatar })
+    }
+    if (!this._watcher && app.globalData.openid) {
+      this._startWatch()
+    }
   },
 
   onHide() {
@@ -55,16 +72,48 @@ Page({
       .orderBy('createdAt', 'asc')
       .watch({
         onChange: snapshot => {
-          this.setData({ messages: snapshot.docs }, () => {
+          const ids = this.data.selectedIds
+          const msgs = this._processMessages(snapshot.docs).map(m => ({
+            ...m, selected: ids.indexOf(m._id) !== -1
+          }))
+          this.setData({ messages: msgs }, () => {
             this.setData({ scrollId: 'msg-bottom' })
           })
         },
         onError: err => {
           console.error('watch error', err)
-          // 1秒后重连
           setTimeout(() => this._startWatch(), 1000)
         }
       })
+  },
+
+  _extractTime(createdAt) {
+    if (!createdAt) return 0
+    if (createdAt instanceof Date) return createdAt.getTime()
+    if (typeof createdAt === 'object' && createdAt.$date) return createdAt.$date
+    const d = new Date(createdAt)
+    return isNaN(d.getTime()) ? 0 : d.getTime()
+  },
+
+  // 给消息加 showTime 标记：首条或距前条 > 5 分钟时显示时间
+  _processMessages(docs) {
+    const { formatChatTime } = require('../../utils/time')
+    const FIVE_MIN = 5 * 60 * 1000
+    let prevTime = 0
+    return docs.map((m, i) => {
+      const t = this._extractTime(m.createdAt)
+      const showTime = i === 0 || (t > 0 && t - prevTime > FIVE_MIN)
+      if (t > 0) prevTime = t
+      const processed = {
+        ...m,
+        showTime,
+        timeLabel: showTime ? formatChatTime(m.createdAt) : ''
+      }
+      if (m.type === 'merged' && Array.isArray(m.mergedItems)) {
+        processed.mergedPreview = m.mergedItems.slice(0, 3).map((it, idx) => ({ ...it, idx }))
+      }
+      return processed
+    })
   },
 
   _closeWatch() {
@@ -87,12 +136,12 @@ Page({
       senderId: openid,
       senderRole: app.globalData.isAdmin ? 'admin' : 'user',
       createdAt: db.serverDate(),
+      recalled: false,
       ...data
     }
 
     await db.collection('messages').add({ data: msgData })
 
-    // 更新会话
     const preview = data.type === 'text' ? data.content : `[${data.type}]`
     db.collection('conversations').doc(conversationId).set({
       data: {
@@ -104,7 +153,6 @@ Page({
       }
     }).catch(() => {})
 
-    // 推送通知
     if (!app.globalData.isAdmin) {
       callFn('sendChatNotify', {
         messagePreview: preview.substring(0, 20),
@@ -116,14 +164,41 @@ Page({
   sendText() {
     const text = this.data.inputText.trim()
     if (!text) return
-    this.setData({ inputText: '' })
-    this._sendMsg({ type: 'text', content: text })
+    const msgData = { type: 'text', content: text }
+    if (this.data.quotingMsg) {
+      msgData.quotedMsg = {
+        _id: this.data.quotingMsg._id,
+        content: this.data.quotingMsg.content || '',
+        type: this.data.quotingMsg.type,
+        senderId: this.data.quotingMsg.senderId
+      }
+    }
+    this.setData({ inputText: '', quotingMsg: null })
+    this._sendMsg(msgData)
   },
 
-  sendEmoji(e) {
+  // 表情插入输入框（不关闭面板）
+  insertEmoji(e) {
     const emoji = e.currentTarget.dataset.emoji
-    this._sendMsg({ type: 'emoji', content: emoji })
-    this.setData({ showEmoji: false })
+    this.setData({ inputText: this.data.inputText + emoji })
+  },
+
+  // 退格删除最后一个字符
+  deleteLastChar() {
+    const text = this.data.inputText
+    if (!text) return
+    // 正确处理 emoji（多字节字符）
+    const arr = [...text]
+    arr.pop()
+    this.setData({ inputText: arr.join('') })
+  },
+
+  closePanels() {
+    this.setData({ showEmoji: false, showExtra: false })
+  },
+
+  clearQuote() {
+    this.setData({ quotingMsg: null })
   },
 
   async sendImage() {
@@ -178,11 +253,8 @@ Page({
   startRecord() {
     const rm = wx.getRecorderManager()
     this._recorder = rm
-    this._recorderDuration = 0
     rm.start({ format: 'aac', duration: 60000 })
-    rm.onStart(() => {
-      this.setData({ recording: true })
-    })
+    rm.onStart(() => this.setData({ recording: true }))
     rm.onStop(async res => {
       this.setData({ recording: false })
       if (this._cancelled || !res.tempFilePath) return
@@ -215,5 +287,152 @@ Page({
       this._recorder.stop()
       this.setData({ recording: false })
     }
+  },
+
+  // ── 长按浮层菜单 ──
+  noop() {},
+
+  onBubbleLongPress(e) {
+    const { msg, x, y } = e.detail
+    if (!msg || msg.recalled) return
+    // 菜单大小约 220x180，根据点击位置自适应
+    const winInfo = wx.getWindowInfo ? wx.getWindowInfo() : { windowWidth: 375, windowHeight: 667 }
+    const menuW = 160
+    const menuH = 200
+    let menuX = Math.min(Math.max(8, x - menuW / 2), winInfo.windowWidth - menuW - 8)
+    let menuY = y - menuH - 10
+    if (menuY < 60) menuY = y + 20
+    const canCopy = msg.type === 'text' || msg.type === 'emoji'
+    this.setData({
+      menuShow: true, menuX, menuY, menuMsg: msg, menuCanCopy: canCopy,
+      showEmoji: false, showExtra: false
+    })
+  },
+
+  closeMenu() {
+    this.setData({ menuShow: false, menuMsg: null })
+  },
+
+  menuCopy() {
+    const msg = this.data.menuMsg
+    if (msg && msg.content) wx.setClipboardData({ data: msg.content })
+    this.closeMenu()
+  },
+
+  menuQuote() {
+    this.setData({ quotingMsg: this.data.menuMsg })
+    this.closeMenu()
+  },
+
+  menuMultiSelect() {
+    const msg = this.data.menuMsg
+    this.closeMenu()
+    if (msg) this._enterMultiSelect(msg._id)
+  },
+
+  menuDelete() {
+    const msg = this.data.menuMsg
+    this.closeMenu()
+    if (msg) this._deleteMessage(msg._id)
+  },
+
+  // ── 合并消息 ──
+  mergeSelected() {
+    const ids = this.data.selectedIds
+    if (ids.length < 2) return
+    const msgs = this.data.messages.filter(m => ids.indexOf(m._id) !== -1)
+    const items = msgs.map(m => ({
+      senderName: m.senderId === this.data.myOpenid ? '我' : '对方',
+      content: m.content || `[${m.type}]`,
+      type: m.type
+    }))
+    this._sendMsg({ type: 'merged', content: `[合并消息 ${items.length}条]`, mergedItems: items })
+    this.setData({ multiSelect: false, selectedIds: [] })
+  },
+
+  onOpenMerged(e) {
+    const msg = e.detail.msg
+    if (msg && msg.type === 'merged' && msg.mergedItems) {
+      this.setData({ mergedDetail: { items: msg.mergedItems } })
+    }
+  },
+
+  closeMergedDetail() {
+    this.setData({ mergedDetail: null })
+  },
+
+  // ── 多选：tap 气泡 ──
+  onBubbleSelect(e) {
+    const { msgId } = e.detail
+    const ids = [...this.data.selectedIds]
+    const idx = ids.indexOf(msgId)
+    if (idx === -1) ids.push(msgId)
+    else ids.splice(idx, 1)
+    this.setData({
+      selectedIds: ids,
+      messages: this.data.messages.map(m => ({ ...m, selected: ids.indexOf(m._id) !== -1 }))
+    })
+  },
+
+  _enterMultiSelect(firstId) {
+    const ids = firstId ? [firstId] : []
+    this.setData({
+      multiSelect: true,
+      selectedIds: ids,
+      messages: this.data.messages.map(m => ({ ...m, selected: ids.indexOf(m._id) !== -1 })),
+      showEmoji: false,
+      showExtra: false
+    })
+  },
+
+  exitMultiSelect() {
+    this.setData({
+      multiSelect: false,
+      selectedIds: [],
+      messages: this.data.messages.map(m => ({ ...m, selected: false }))
+    })
+  },
+
+  deleteSelected() {
+    if (this.data.selectedIds.length === 0) return
+    wx.showModal({
+      title: '确认删除',
+      content: `删除选中的 ${this.data.selectedIds.length} 条消息？`,
+      success: res => {
+        if (!res.confirm) return
+        const ids = [...this.data.selectedIds]
+        ids.forEach(id => {
+          db.collection('messages').doc(id).remove().catch(() => {})
+        })
+        const messages = this._processMessages(this.data.messages.filter(m => ids.indexOf(m._id) === -1))
+        this.setData({ messages, multiSelect: false, selectedIds: [] })
+      }
+    })
+  },
+
+  _recallMessage(msg) {
+    db.collection('messages').doc(msg._id).update({
+      data: { recalled: true }
+    }).then(() => {
+      const messages = this.data.messages.map(m =>
+        m._id === msg._id ? { ...m, recalled: true } : m
+      )
+      this.setData({ messages })
+    }).catch(() => {
+      wx.showToast({ title: '撤回失败', icon: 'none' })
+    })
+  },
+
+  _deleteMessage(msgId) {
+    wx.showModal({
+      title: '确认删除',
+      content: '删除后不可恢复',
+      success: res => {
+        if (!res.confirm) return
+        db.collection('messages').doc(msgId).remove().catch(() => {})
+        const messages = this._processMessages(this.data.messages.filter(m => m._id !== msgId))
+        this.setData({ messages })
+      }
+    })
   }
 })

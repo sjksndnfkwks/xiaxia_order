@@ -4,6 +4,7 @@
     "food-item": "/components/food-item/food-item",
     "cart-bar": "/components/cart-bar/cart-bar",
     "note-popup": "/components/note-popup/note-popup",
-    "anniversary-popup": "/components/anniversary-popup/anniversary-popup"
+    "anniversary-popup": "/components/anniversary-popup/anniversary-popup",
+    "announcement-popup": "/components/announcement-popup/announcement-popup"
   }
 }

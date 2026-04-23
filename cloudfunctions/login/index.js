@@ -22,6 +22,7 @@ exports.main = async (event, context) => {
     if (res.data.length === 0) {
       await db.collection('users').add({
         data: {
+          _openid: OPENID,
           openid: OPENID,
           nickName: '虾虾',
           avatarUrl: '',
@@ -33,9 +34,9 @@ exports.main = async (event, context) => {
       userInfo = { openid: OPENID, nickName: '虾虾', avatarUrl: '', isAdmin }
     } else {
       userInfo = res.data[0]
-      await db.collection('users').doc(userInfo._id).update({
-        data: { lastActiveAt: now, isAdmin }
-      })
+      const patch = { lastActiveAt: now, isAdmin }
+      if (!userInfo._openid) patch._openid = OPENID
+      await db.collection('users').doc(userInfo._id).update({ data: patch })
     }
 
     return { openid: OPENID, isAdmin, userInfo }

@@ -6,17 +6,24 @@ Page({
   data: {
     loading: true,
     categories: [],
-    itemMap: {},       // { catId: [item,...] }
+    itemMap: {},
+    displayItemMap: {},
+    searchText: '',
+    searchResultEmpty: false,
     activeCat: '',
-    activeCatId: '',   // scroll-into-view for left sidebar
-    scrollTarget: '',  // scroll-into-view for right list
+    activeCatId: '',
+    scrollTarget: '',
 
     // 备注弹窗
     notePopup: { show: false, itemId: '', itemName: '', note: '' },
 
     // 纪念日弹窗
     showAnniversary: false,
-    todayAnniversary: null
+    todayAnniversary: null,
+
+    // 公告弹窗
+    showAnnouncement: false,
+    todayAnnouncement: null
   },
 
   async onLoad() {
@@ -25,6 +32,9 @@ Page({
   },
 
   onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 0, hidden: false })
+    }
     // 检查是否有待显示的纪念日（每次进入首页时检查）
     const ann = app.globalData.todayAnniversary
     if (ann) {
@@ -34,6 +44,18 @@ Page({
         this.setData({ showAnniversary: true, todayAnniversary: ann })
       }
     }
+    // 公告
+    const anb = app.globalData.todayAnnouncement
+    if (anb) {
+      const shownAnb = wx.getStorageSync('annShown_' + anb._id)
+      if (!shownAnb && !this.data.showAnnouncement) {
+        this.setData({ showAnnouncement: true, todayAnnouncement: anb })
+      }
+    }
+  },
+
+  onAnnouncementClose() {
+    this.setData({ showAnnouncement: false })
   },
 
   async _loadData() {
@@ -56,7 +78,7 @@ Page({
       })
 
       const activeCat = categories.length > 0 ? categories[0]._id : ''
-      this.setData({ categories, itemMap, activeCat, loading: false })
+      this.setData({ categories, itemMap, displayItemMap: itemMap, activeCat, loading: false })
 
       // 缓存各section的位置（用于滚动同步）
       setTimeout(() => this._cacheSectionPositions(), 300)
@@ -106,6 +128,27 @@ Page({
   scrollToCategory(e) {
     const id = e.currentTarget.dataset.id
     this.setData({ activeCat: id, scrollTarget: `section-${id}` })
+  },
+
+  onSearch(e) {
+    const text = (e.detail.value || '').trim()
+    this.setData({ searchText: text })
+    const { itemMap, categories } = this.data
+    if (!text) {
+      this.setData({ displayItemMap: itemMap, searchResultEmpty: false })
+      return
+    }
+    const lower = text.toLowerCase()
+    const filtered = {}
+    let hasResult = false
+    categories.forEach(cat => {
+      filtered[cat._id] = (itemMap[cat._id] || []).filter(item =>
+        item.name.toLowerCase().includes(lower) ||
+        (item.description || '').toLowerCase().includes(lower)
+      )
+      if (filtered[cat._id].length > 0) hasResult = true
+    })
+    this.setData({ displayItemMap: filtered, searchResultEmpty: !hasResult })
   },
 
   onEditNote(e) {

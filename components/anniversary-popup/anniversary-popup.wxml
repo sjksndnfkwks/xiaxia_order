@@ -1,31 +1,40 @@
-<view class="ann-mask" wx:if="{{show}}">
-  <view class="ann-card {{entered ? 'entered' : ''}}">
-    <!-- 花束图片 -->
-    <view class="flower-wrap" bindtap="previewFlower">
-      <image
-        class="flower-img"
-        src="{{anniversary.flowerImageUrl || '/assets/images/flower-default.png'}}"
-        mode="aspectFit"
-      />
-    </view>
+<view class="ann-mask" wx:if="{{show}}" bindtap="onClose">
+  <view class="ann-card {{entered ? 'entered' : ''}}" catchtap="">
+
+    <!-- 关闭按钮 -->
+    <view class="ann-close" bindtap="onClose">✕</view>
+
+    <!-- 背景图片 -->
+    <image
+      class="ann-bg-img"
+      src="{{anniversary.flowerImageUrl || '/assets/images/flower-default.png'}}"
+      mode="aspectFill"
+      bindtap="previewFlower"
+    />
 
     <!-- 标题 -->
     <view class="ann-title-row">
       <text class="ann-title">{{anniversary.title}}</text>
     </view>
 
-    <!-- 信件内容 -->
-    <scroll-view class="letter-scroll" scroll-y>
-      <view class="letter-wrap">
-        <text class="letter-quote">"</text>
-        <text class="letter-content">{{anniversary.letterContent}}</text>
-        <text class="letter-quote end">"</text>
-      </view>
-    </scroll-view>
+    <!-- 信件（有任意内容才显示） -->
+    <block wx:if="{{anniversary.letterTo || anniversary.letterContent || anniversary.letterFrom}}">
+      <scroll-view class="letter-scroll" scroll-y>
+        <view class="letter-paper">
+          <view class="letter-line" wx:if="{{anniversary.letterTo}}">
+            <text class="letter-text">To {{anniversary.letterTo}}：</text>
+          </view>
+          <block wx:if="{{anniversary.letterContent}}">
+            <view class="letter-line" wx:for="{{letterLines}}" wx:key="index">
+              <text class="letter-text">{{item}}</text>
+            </view>
+          </block>
+          <view class="letter-line letter-from" wx:if="{{anniversary.letterFrom}}">
+            <text class="letter-text">From {{anniversary.letterFrom}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </block>
 
-    <!-- 关闭按钮 -->
-    <view class="ann-close" bindtap="onClose">
-      <text>收下了 💙</text>
-    </view>
   </view>
 </view>

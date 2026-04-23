@@ -31,7 +31,16 @@ function formatTime(date) {
  * 今天显示 HH:mm，昨天显示"昨天 HH:mm"，更早显示 MM/DD HH:mm
  */
 function formatChatTime(dateOrStr) {
-  const date = dateOrStr instanceof Date ? dateOrStr : new Date(dateOrStr)
+  if (!dateOrStr) return ''
+  let date
+  if (dateOrStr instanceof Date) {
+    date = dateOrStr
+  } else if (typeof dateOrStr === 'object' && dateOrStr.$date) {
+    date = new Date(dateOrStr.$date)
+  } else {
+    date = new Date(dateOrStr)
+  }
+  if (isNaN(date.getTime())) return ''
   const now = new Date()
   const todayStr = formatDateFull(now)
   const dateStr = formatDateFull(date)
@@ -45,14 +54,27 @@ function formatChatTime(dateOrStr) {
 
   const m = String(date.getMonth() + 1).padStart(2, '0')
   const d = String(date.getDate()).padStart(2, '0')
-  return `${m}/${d} ${timeStr}`
+  // 今年：MM月DD日 HH:mm；跨年：YYYY年MM月DD日 HH:mm
+  if (date.getFullYear() === now.getFullYear()) {
+    return `${m}月${d}日 ${timeStr}`
+  }
+  return `${date.getFullYear()}年${m}月${d}日 ${timeStr}`
 }
 
 /**
  * 格式化订单时间：YYYY年MM月DD日 HH:mm
  */
 function formatOrderTime(dateOrStr) {
-  const date = dateOrStr instanceof Date ? dateOrStr : new Date(dateOrStr)
+  if (!dateOrStr) return ''
+  let date
+  if (dateOrStr instanceof Date) {
+    date = dateOrStr
+  } else if (typeof dateOrStr === 'object' && dateOrStr.$date) {
+    date = new Date(dateOrStr.$date)
+  } else {
+    date = new Date(dateOrStr)
+  }
+  if (isNaN(date.getTime())) return ''
   const y = date.getFullYear()
   const m = String(date.getMonth() + 1).padStart(2, '0')
   const d = String(date.getDate()).padStart(2, '0')

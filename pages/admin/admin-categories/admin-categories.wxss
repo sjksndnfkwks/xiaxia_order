@@ -57,7 +57,7 @@
 .mask {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(13, 31, 110, 0.5);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 200;
   display: flex;
   align-items: flex-end;
@@ -102,7 +102,7 @@
 }
 
 .btn-save {
-  background: var(--grad-primary);
+  background: var(--c-primary);
   color: #fff;
   height: 88rpx;
   border-radius: 50rpx;

@@ -1,0 +1,59 @@
+<scroll-view class="ann-list" scroll-y wx:if="{{!showForm}}">
+  <view class="loading-wrap" wx:if="{{loading}}"><text>加载中...</text></view>
+  <view wx:else>
+    <view class="ann-item" wx:for="{{list}}" wx:key="_id">
+      <image class="ann-thumb" src="{{item.imageUrl}}" mode="aspectFill" wx:if="{{item.imageUrl}}" />
+      <view class="ann-info">
+        <text class="ann-date">{{item.publishDate}}</text>
+        <text class="ann-title">{{item.title}}</text>
+        <text class="ann-preview">{{item.preview}}</text>
+      </view>
+      <view class="ann-actions">
+        <view class="action-btn edit" bindtap="editItem" data-item="{{item}}">编辑</view>
+        <view class="action-btn delete" bindtap="deleteItem" data-id="{{item._id}}">删除</view>
+      </view>
+    </view>
+    <view class="empty-tip" wx:if="{{list.length === 0}}">还没有公告，点下方加一条</view>
+  </view>
+  <view style="height: 160rpx;"></view>
+</scroll-view>
+
+<view class="fab" bindtap="addItem" wx:if="{{!showForm}}">＋</view>
+
+<scroll-view class="form-page" scroll-y wx:if="{{showForm}}">
+  <view class="form-header">
+    <view class="form-back" bindtap="closeForm">‹ 返回</view>
+    <text class="form-title">{{editingId ? '编辑公告' : '新增公告'}}</text>
+  </view>
+
+  <view class="field-card">
+    <text class="field-label">标题</text>
+    <input class="field-input" value="{{form.title}}" bindinput="onInput" data-key="title" placeholder="如：新菜品上架" maxlength="30" />
+  </view>
+
+  <view class="field-card">
+    <text class="field-label">发表日期</text>
+    <picker mode="date" value="{{form.publishDate}}" bindchange="onDateChange">
+      <view class="field-input picker-field">{{form.publishDate || '选择日期'}}</view>
+    </picker>
+  </view>
+
+  <view class="field-card">
+    <text class="field-label">图片（选填）</text>
+    <view class="img-upload" bindtap="uploadImg">
+      <image wx:if="{{form.imageUrl}}" src="{{form.imageUrl}}" mode="aspectFill" class="upload-preview" />
+      <view wx:else class="upload-placeholder">
+        <text class="upload-text">点击上传</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="field-card">
+    <text class="field-label">内容</text>
+    <textarea class="ann-input" value="{{form.content}}" bindinput="onInput" data-key="content" placeholder="写下公告内容..." maxlength="500" />
+    <text class="char-count">{{form.content.length}}/500</text>
+  </view>
+
+  <view class="form-submit" bindtap="saveItem">保存公告</view>
+  <view style="height: 60rpx;"></view>
+</scroll-view>

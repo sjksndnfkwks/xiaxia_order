@@ -1,7 +1,7 @@
 <!-- Tab切换 -->
 <view class="tab-bar">
-  <view class="tab-item {{activeTab === 'food' ? 'active' : ''}}" bindtap="switchTab" data-tab="food">🍽 菜品</view>
-  <view class="tab-item {{activeTab === 'snack' ? 'active' : ''}}" bindtap="switchTab" data-tab="snack">🍬 零食</view>
+  <view class="tab-item {{activeTab === 'food' ? 'active' : ''}}" bindtap="switchTab" data-tab="food">菜品</view>
+  <view class="tab-item {{activeTab === 'snack' ? 'active' : ''}}" bindtap="switchTab" data-tab="snack">零食</view>
 </view>
 
 <!-- 列表 -->
@@ -45,7 +45,6 @@
     <view class="img-upload" bindtap="uploadImg">
       <image wx:if="{{form.imageUrl}}" src="{{form.imageUrl}}" mode="aspectFill" class="upload-preview" />
       <view wx:else class="upload-placeholder">
-        <text class="upload-icon">📷</text>
         <text class="upload-text">点击上传图片</text>
       </view>
     </view>

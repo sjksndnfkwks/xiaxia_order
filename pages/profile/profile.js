@@ -22,10 +22,16 @@ Page({
   },
 
   onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 3, hidden: false })
+    }
     this.setData({
       userInfo: app.globalData.userInfo || {},
       isAdmin: app.globalData.isAdmin
     })
+    if (app.globalData.openid) {
+      this._loadOrders()
+    }
   },
 
   async _loadOrders() {
@@ -48,21 +54,28 @@ Page({
     }
   },
 
-  async updateProfile() {
-    try {
-      const res = await new Promise((resolve, reject) => {
-        wx.getUserProfile({ desc: '用于显示你的头像和昵称', success: resolve, fail: reject })
-      })
-      const { nickName, avatarUrl } = res.userInfo
-      app.globalData.userInfo = { ...app.globalData.userInfo, nickName, avatarUrl }
-      this.setData({ userInfo: app.globalData.userInfo })
+  onChooseAvatar(e) {
+    const avatarUrl = e.detail.avatarUrl
+    const userInfo = { ...app.globalData.userInfo, avatarUrl }
+    app.globalData.userInfo = userInfo
+    this.setData({ userInfo })
+    this._saveUserField({ avatarUrl })
+  },
 
-      const db = wx.cloud.database()
-      const openid = app.globalData.openid
-      db.collection('users').where({ openid }).update({ data: { nickName, avatarUrl } })
-    } catch (e) {
-      // 用户取消
-    }
+  onNicknameBlur(e) {
+    const nickName = (e.detail.value || '').trim()
+    if (!nickName) return
+    const userInfo = { ...app.globalData.userInfo, nickName }
+    app.globalData.userInfo = userInfo
+    this.setData({ userInfo })
+    this._saveUserField({ nickName })
+  },
+
+  _saveUserField(fields) {
+    const docId = app.globalData.userInfo?._id
+    if (!docId) return
+    wx.cloud.database().collection('users').doc(docId).update({ data: fields })
+      .catch(err => console.error('保存用户信息失败', err))
   },
 
   goOrderDetail(e) {
@@ -71,6 +84,14 @@ Page({
 
   goChat() {
     wx.switchTab({ url: '/pages/chat/chat' })
+  },
+
+  goWishlist() {
+    wx.navigateTo({ url: '/pages/wishlist/wishlist' })
+  },
+
+  goAnnouncements() {
+    wx.navigateTo({ url: '/pages/announcements/announcements' })
   },
 
   goAdmin() {

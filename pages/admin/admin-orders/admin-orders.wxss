@@ -1,6 +1,7 @@
 .filter-bar {
-  background: var(--c-bg-deep);
+  background: #FFFFFF;
   white-space: nowrap;
+  border-bottom: 1rpx solid var(--c-border-light);
 }
 
 .filter-inner {
@@ -13,18 +14,18 @@
   display: inline-flex;
   padding: 12rpx 28rpx;
   border-radius: 50rpx;
-  background: rgba(255,255,255,0.12);
-  color: var(--c-text-hint);
+  background: #F0F0F0;
+  color: #888888;
   font-size: 26rpx;
   flex-shrink: 0;
-  border: 1rpx solid rgba(255,255,255,0.15);
+  border: 1rpx solid transparent;
 }
 
 .filter-btn.active {
-  background: var(--c-primary-light);
-  color: #fff;
+  background: #E8F4FF;
+  color: #4A90D9;
   font-weight: 600;
-  border-color: transparent;
+  border-color: #4A90D9;
 }
 
 .order-list {
@@ -67,18 +68,18 @@
 }
 
 .overall-note {
-  background: rgba(255, 107, 157, 0.08);
+  background: #FFFDE7;
   border-radius: 12rpx;
   padding: 16rpx 20rpx;
   margin-bottom: 16rpx;
   display: flex;
   flex-wrap: wrap;
   gap: 8rpx;
-  border: 1rpx solid rgba(255, 107, 157, 0.2);
+  border: 1rpx solid #FFE082;
 }
 
-.note-label { font-size: 24rpx; color: var(--c-accent); font-weight: 600; }
-.note-content { font-size: 24rpx; color: var(--c-accent); }
+.note-label { font-size: 24rpx; color: #E65100; font-weight: 600; }
+.note-content { font-size: 24rpx; color: #E65100; }
 
 .sub-title {
   font-size: 26rpx;
@@ -103,11 +104,12 @@
 
 .order-item-note {
   font-size: 22rpx;
-  color: var(--c-accent);
-  background: rgba(255, 107, 157, 0.1);
+  color: #E65100;
+  background: #FFFDE7;
   border-radius: 6rpx;
   padding: 2rpx 10rpx;
   display: inline-block;
+  border: 1rpx solid #FFE082;
 }
 
 .card-actions {
@@ -126,9 +128,9 @@
   font-weight: 600;
 }
 
-.action-btn.confirm { background: var(--grad-primary); color: #fff; box-shadow: var(--shadow-btn); }
-.action-btn.done { background: linear-gradient(135deg, #1A6B3A, #27AE60); color: #fff; }
-.action-btn.cancel { background: rgba(255, 107, 157, 0.12); color: var(--c-accent); }
+.action-btn.confirm { background: var(--c-primary); color: #fff; box-shadow: var(--shadow-btn); }
+.action-btn.done { background: #27AE60; color: #fff; }
+.action-btn.cancel { background: #F0F0F0; color: var(--c-text-sub); }
 
 .empty-tip {
   padding: 80rpx;

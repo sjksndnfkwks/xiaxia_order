@@ -3,97 +3,336 @@
   display: flex;
   flex-direction: column;
   background: var(--c-bg);
+  background-image:
+    radial-gradient(circle at 20% 25%, rgba(255, 216, 90, 0.08) 0, transparent 180rpx),
+    radial-gradient(circle at 85% 70%, rgba(94, 226, 211, 0.08) 0, transparent 220rpx);
 }
 
 .msg-list {
-  flex: 1;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  transition: bottom 0.3s;
+  bottom: calc(207rpx + env(safe-area-inset-bottom));
   padding-top: 88rpx;
 }
 
+/* ── 时间分隔符（微信风格） ── */
+.time-separator {
+  display: flex;
+  justify-content: center;
+  padding: 20rpx 0 12rpx;
+}
+
+.time-separator text {
+  font-size: 22rpx;
+  color: var(--c-text-hint);
+  background: rgba(255, 255, 255, 0.6);
+  padding: 6rpx 18rpx;
+  border-radius: 10rpx;
+  letter-spacing: 0.5rpx;
+}
+
+/* 透明遮罩，点击关闭面板 */
+.panel-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: calc(207rpx + env(safe-area-inset-bottom));
+  z-index: 150;
+  background: transparent;
+}
+
+/* ── 引用预览条 ── */
+.quote-bar {
+  position: fixed;
+  bottom: calc(207rpx + env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  background: var(--c-yellow-pale);
+  border-top: 2rpx solid var(--c-yellow);
+  padding: 14rpx 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  z-index: 350;
+}
+
+.quote-bar-label {
+  font-size: 24rpx;
+  color: var(--c-primary);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.quote-bar-content {
+  flex: 1;
+  font-size: 24rpx;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quote-bar-close {
+  font-size: 28rpx;
+  color: #999;
+  flex-shrink: 0;
+  padding: 0 8rpx;
+}
+
+/* ── 输入栏（位于 tabBar 之上） ── */
 .input-bar {
   position: fixed;
-  bottom: 0;
+  bottom: calc(107rpx + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
   background: var(--c-bg-card);
-  border-top: 1rpx solid var(--c-border-light);
-  padding: 16rpx 24rpx;
+  border-top: 1rpx solid var(--c-border);
+  padding: 16rpx 20rpx;
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  z-index: 50;
+  gap: 14rpx;
+  z-index: 400;
+  height: 100rpx;
+  box-sizing: border-box;
 }
 
 .icon-btn {
-  width: 72rpx;
-  height: 72rpx;
+  width: 68rpx;
+  height: 68rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 44rpx;
+  font-size: 40rpx;
   flex-shrink: 0;
 }
 
 .text-input {
   flex: 1;
   height: 72rpx;
-  background: var(--c-bg);
+  background: var(--c-bg-cream);
   border-radius: 36rpx;
   padding: 0 24rpx;
   font-size: 28rpx;
-  color: var(--c-text-body);
-  border: 2rpx solid var(--c-border);
+  color: var(--c-text-h);
+  border: 1rpx solid transparent;
+}
+
+.input-placeholder {
+  color: var(--c-text-hint);
 }
 
 .voice-btn {
   flex: 1;
   height: 72rpx;
-  background: var(--c-bg);
+  background: var(--c-bg-cream);
   border-radius: 36rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28rpx;
-  color: var(--c-text-sub);
-  border: 2rpx solid var(--c-border);
-  transition: all 0.2s;
+  font-size: 26rpx;
+  color: var(--c-primary);
+  border: 1rpx solid transparent;
+  font-weight: 700;
 }
 
 .voice-btn.recording {
-  background: var(--c-primary);
-  color: #fff;
-  border-color: var(--c-primary);
+  background: var(--c-accent);
+  color: #FFFFFF;
 }
 
+/* ── 发送按钮：鸭子黄 ── */
 .send-btn {
-  background: var(--grad-primary);
-  color: #fff;
+  height: 72rpx;
+  padding: 0 32rpx;
+  border-radius: 16rpx;
+  background: #07C160;
+  color: #FFFFFF;
   font-size: 28rpx;
   font-weight: 700;
-  padding: 16rpx 32rpx;
-  border-radius: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  box-shadow: var(--shadow-btn);
+  box-shadow: 0 2rpx 6rpx rgba(7, 193, 96, 0.25);
 }
 
-.emoji-panel {
+/* ── 多选操作栏 ── */
+.multiselect-bar {
   position: fixed;
-  bottom: 0;
+  bottom: calc(107rpx + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
   background: var(--c-bg-card);
-  border-top: 1rpx solid var(--c-border-light);
-  padding: 24rpx;
+  border-top: 1rpx solid var(--c-border);
+  padding: 20rpx 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 400;
+  height: 100rpx;
+  box-sizing: border-box;
+}
+
+.ms-cancel {
+  font-size: 30rpx;
+  color: var(--c-text-sub);
+  padding: 12rpx 24rpx;
+}
+
+.ms-count {
+  font-size: 28rpx;
+  color: var(--c-primary);
+  font-weight: 700;
+}
+
+.ms-action {
+  font-size: 28rpx;
+  padding: 12rpx 24rpx;
+  font-weight: 700;
+}
+
+.ms-merge {
+  color: var(--c-primary);
+}
+
+.ms-delete {
+  color: var(--c-accent);
+}
+
+.ms-action.ms-disabled {
+  color: var(--c-text-hint);
+}
+
+/* ── 长按浮层菜单 ── */
+.msg-menu-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 500;
+  background: transparent;
+}
+
+.msg-menu {
+  position: fixed;
+  width: 160px;
+  background: var(--c-bg-card);
+  border-radius: 16rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+  padding: 8rpx 0;
+  z-index: 501;
+  border: 1rpx solid var(--c-border-light);
+}
+
+.menu-item {
+  padding: 20rpx 28rpx;
+  font-size: 28rpx;
+  color: var(--c-text-h);
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item.menu-danger {
+  color: var(--c-accent);
+}
+
+/* ── 合并消息详情弹窗 ── */
+.merged-mask {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 40rpx;
+}
+
+.merged-card {
+  width: 100%;
+  max-height: 80vh;
+  background: var(--c-bg-card);
+  border-radius: 24rpx;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.merged-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 28rpx;
+  border-bottom: 1rpx solid var(--c-border-light);
+}
+
+.merged-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--c-text-h);
+}
+
+.merged-close {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-text-sub);
+  font-size: 28rpx;
+}
+
+.merged-scroll {
+  flex: 1;
+  max-height: 60vh;
+}
+
+.merged-item {
+  padding: 20rpx 28rpx;
+  border-bottom: 1rpx solid var(--c-border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.merged-sender {
+  font-size: 24rpx;
+  color: var(--c-primary);
+  font-weight: 600;
+}
+
+.merged-content {
+  font-size: 28rpx;
+  color: var(--c-text-h);
+  line-height: 1.5;
+}
+
+/* ── 表情面板 ── */
+.emoji-panel {
+  position: fixed;
+  bottom: calc(207rpx + env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  background: var(--c-bg-cream);
+  border-top: 1rpx solid var(--c-border);
+  z-index: 200;
+}
+
+/* scroll-view 必须给固定高度才能滚动 */
+.emoji-scroll {
+  height: 300rpx;
+  width: 100%;
+}
+
+.emoji-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 16rpx;
-  z-index: 40;
-  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  padding: 20rpx 24rpx 12rpx;
 }
 
 .emoji-item {
@@ -105,18 +344,36 @@
   justify-content: center;
 }
 
+/* 退格键固定在底部工具栏 */
+.emoji-toolbar {
+  border-top: 1rpx solid var(--c-border);
+  padding: 12rpx 24rpx;
+  display: flex;
+  justify-content: flex-end;
+  background: var(--c-bg-cream);
+}
+
+.emoji-backspace-btn {
+  font-size: 40rpx;
+  color: var(--c-primary);
+  padding: 8rpx 24rpx;
+  background: var(--c-bg-card);
+  border-radius: 12rpx;
+  font-weight: 700;
+}
+
+/* ── 更多面板 ── */
 .extra-panel {
   position: fixed;
-  bottom: 0;
+  bottom: calc(207rpx + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
-  background: var(--c-bg-card);
-  border-top: 1rpx solid var(--c-border-light);
-  padding: 40rpx 60rpx;
+  background: var(--c-bg-cream);
+  border-top: 1rpx solid var(--c-border);
+  padding: 40rpx 60rpx 36rpx;
   display: flex;
   gap: 60rpx;
-  z-index: 40;
-  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  z-index: 200;
 }
 
 .extra-btn {
@@ -124,20 +381,25 @@
   flex-direction: column;
   align-items: center;
   gap: 16rpx;
+  width: 140rpx;
 }
 
 .extra-icon {
-  font-size: 60rpx;
-  width: 120rpx;
-  height: 120rpx;
-  background: var(--c-primary-pale);
+  font-size: 56rpx;
+  width: 140rpx;
+  height: 140rpx;
+  background: var(--c-bg-card);
   border-radius: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: var(--shadow-card);
 }
 
 .extra-label {
-  font-size: 24rpx;
-  color: var(--c-text-sub);
+  font-size: 28rpx;
+  color: var(--c-text-h);
+  font-weight: 600;
+  width: 140rpx;
+  text-align: center;
 }

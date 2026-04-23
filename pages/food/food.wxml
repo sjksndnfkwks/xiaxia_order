@@ -5,6 +5,13 @@
   bind:close="onAnniversaryClose"
 />
 
+<!-- 公告弹窗 -->
+<announcement-popup
+  show="{{showAnnouncement}}"
+  announcement="{{todayAnnouncement}}"
+  bind:close="onAnnouncementClose"
+/>
+
 <!-- 备注弹窗 -->
 <note-popup
   show="{{notePopup.show}}"
@@ -14,57 +21,85 @@
   bind:close="onNoteClose"
 />
 
-<!-- 加载中 -->
-<view class="loading-wrap" wx:if="{{loading}}">
-  <text>加载中...</text>
+<!-- 史迪仔加载动画 -->
+<view class="stitch-loading" wx:if="{{loading}}">
+  <view class="ears-wrap">
+    <view class="ear"></view>
+    <view class="ear"></view>
+  </view>
+  <view class="head-circle"></view>
+  <text class="loading-text">加载中<text class="loading-dots"></text></text>
 </view>
 
-<!-- 主体：双栏布局 -->
-<view class="food-container" wx:else>
-  <!-- 左侧分类导航 -->
-  <scroll-view class="cat-sidebar" scroll-y scroll-into-view="{{activeCatId}}">
-    <view
-      wx:for="{{categories}}"
-      wx:key="_id"
-      id="cat-nav-{{item._id}}"
-      class="cat-item {{activeCat === item._id ? 'active' : ''}}"
-      bindtap="scrollToCategory"
-      data-id="{{item._id}}"
-    >
-      <text class="cat-icon">{{item.icon}}</text>
-      <text class="cat-name">{{item.name}}</text>
+<!-- 主体 -->
+<view class="food-wrapper" wx:else>
+  <!-- 顶部搜索栏 -->
+  <view class="food-search-bar">
+    <view class="search-capsule">
+      <input
+        class="search-input"
+        placeholder="今天想吃什么呀"
+        placeholder-class="search-placeholder"
+        value="{{searchText}}"
+        bindinput="onSearch"
+      />
     </view>
-  </scroll-view>
+  </view>
 
-  <!-- 右侧菜品列表 -->
-  <scroll-view
-    class="food-list"
-    scroll-y
-    scroll-into-view="{{scrollTarget}}"
-    bindscroll="onFoodScroll"
-  >
-    <view
-      wx:for="{{categories}}"
-      wx:key="_id"
-      id="section-{{item._id}}"
+  <!-- 双栏布局 -->
+  <view class="food-container">
+    <!-- 左侧分类导航 -->
+    <scroll-view class="cat-sidebar" scroll-y scroll-into-view="{{activeCatId}}">
+      <view
+        wx:for="{{categories}}"
+        wx:key="_id"
+        id="cat-nav-{{item._id}}"
+        class="cat-item {{activeCat === item._id ? 'active' : ''}}"
+        bindtap="scrollToCategory"
+        data-id="{{item._id}}"
+      >
+        <text class="cat-icon">{{item.icon}}</text>
+        <text class="cat-name">{{item.name}}</text>
+      </view>
+    </scroll-view>
+
+    <!-- 右侧菜品列表 -->
+    <scroll-view
+      class="food-list"
+      scroll-y
+      scroll-into-view="{{scrollTarget}}"
+      bindscroll="onFoodScroll"
     >
-      <view class="cat-section-title">{{item.icon}} {{item.name}}</view>
-      <view wx:if="{{itemMap[item._id] && itemMap[item._id].length > 0}}">
-        <food-item
-          wx:for="{{itemMap[item._id]}}"
-          wx:for-item="foodItem"
+      <view wx:if="{{searchText && searchResultEmpty}}">
+        <view class="empty-cat search-empty">
+          <text>没找到"{{searchText}}"相关的菜哦~</text>
+        </view>
+      </view>
+      <view wx:else>
+        <view
+          wx:for="{{categories}}"
           wx:key="_id"
-          item="{{foodItem}}"
-          bind:editnote="onEditNote"
-        />
+          id="section-{{item._id}}"
+        >
+          <view class="cat-section-title">{{item.icon}} {{item.name}}</view>
+          <view wx:if="{{displayItemMap[item._id] && displayItemMap[item._id].length > 0}}">
+            <food-item
+              wx:for="{{displayItemMap[item._id]}}"
+              wx:for-item="foodItem"
+              wx:key="_id"
+              item="{{foodItem}}"
+              bind:editnote="onEditNote"
+            />
+          </view>
+          <view class="empty-cat" wx:else>
+            <text>暂时没有菜品哦~</text>
+          </view>
+        </view>
       </view>
-      <view class="empty-cat" wx:else>
-        <text>暂时没有菜品哦~</text>
-      </view>
-    </view>
 
-    <view style="height: 160rpx;"></view>
-  </scroll-view>
+      <view style="height: 160rpx;"></view>
+    </scroll-view>
+  </view>
 </view>
 
 <!-- 底部购物车 -->

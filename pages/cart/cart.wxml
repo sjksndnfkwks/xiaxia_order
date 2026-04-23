@@ -9,8 +9,7 @@
 
 <!-- 空购物车 -->
 <view class="empty-cart" wx:if="{{cartItems.length === 0}}">
-  <text class="empty-emoji">🛒</text>
-  <text class="empty-text">购物车还空着呢~</text>
+  <text class="empty-text">购物车是空的~</text>
   <text class="empty-hint">去点菜或选零食吧！</text>
   <view class="go-btn" bindtap="goFood">去点菜</view>
 </view>
@@ -19,11 +18,11 @@
 <scroll-view class="cart-scroll" scroll-y wx:else>
   <!-- 整体备注 -->
   <view class="section-card">
-    <view class="section-title">整体备注</view>
+    <view class="section-title">备注</view>
     <textarea
       class="overall-note"
       value="{{overallNote}}"
-      placeholder="给老公的整体备注，如：今天想吃辣一点~"
+      placeholder="给老板留个言，比如多加点香菜~"
       maxlength="100"
       bindinput="onOverallNoteInput"
     />
@@ -31,13 +30,13 @@
 
   <!-- 菜品区 -->
   <view class="section-card" wx:if="{{foodItems.length > 0}}">
-    <view class="section-title">🍽 菜品（{{foodCount}}件）</view>
+    <view class="section-title">菜品（{{foodCount}}件）</view>
     <view class="cart-item" wx:for="{{foodItems}}" wx:key="itemId">
       <image class="item-img" src="{{item.imageUrl}}" mode="aspectFill" />
       <view class="item-info">
         <text class="item-name">{{item.name}}</text>
         <view class="item-note-row" wx:if="{{item.note}}" bindtap="editNote" data-id="{{item.itemId}}" data-name="{{item.name}}" data-note="{{item.note}}">
-          <text class="item-note">📝 {{item.note}}</text>
+          <text class="item-note">{{item.note}}</text>
         </view>
         <view class="item-note-add" wx:else bindtap="editNote" data-id="{{item.itemId}}" data-name="{{item.name}}" data-note="">
           <text class="item-note hint">+ 加备注</text>
@@ -53,13 +52,13 @@
 
   <!-- 零食区 -->
   <view class="section-card" wx:if="{{snackItems.length > 0}}">
-    <view class="section-title">🍬 零食（{{snackCount}}件）</view>
+    <view class="section-title">零食（{{snackCount}}件）</view>
     <view class="cart-item" wx:for="{{snackItems}}" wx:key="itemId">
       <image class="item-img" src="{{item.imageUrl}}" mode="aspectFill" />
       <view class="item-info">
         <text class="item-name">{{item.name}}</text>
         <view class="item-note-row" wx:if="{{item.note}}" bindtap="editNote" data-id="{{item.itemId}}" data-name="{{item.name}}" data-note="{{item.note}}">
-          <text class="item-note">📝 {{item.note}}</text>
+          <text class="item-note">{{item.note}}</text>
         </view>
         <view class="item-note-add" wx:else bindtap="editNote" data-id="{{item.itemId}}" data-name="{{item.name}}" data-note="">
           <text class="item-note hint">+ 加备注</text>
@@ -76,12 +75,13 @@
   <view style="height: 180rpx;"></view>
 </scroll-view>
 
-<!-- 底部下单按钮 -->
+<!-- 底部发射按钮 -->
 <view class="submit-bar" wx:if="{{cartItems.length > 0}}">
   <view class="submit-summary">
-    <text>共 {{totalCount}} 件</text>
+    <text class="total-count">{{totalCount}} 件</text>
+    <text class="total-label">商品</text>
   </view>
   <view class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submitOrder">
-    {{submitting ? '提交中...' : '提交订单'}}
+    {{submitting ? '提交中...' : '确认下单'}}
   </view>
 </view>

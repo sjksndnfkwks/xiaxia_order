@@ -1,0 +1,60 @@
+.ann-page {
+  min-height: 100vh;
+  background: var(--c-bg);
+}
+
+.ann-scroll {
+  height: 100vh;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.loading-wrap, .empty-wrap {
+  text-align: center;
+  padding: 120rpx 40rpx;
+  color: var(--c-text-hint);
+  font-size: 26rpx;
+}
+
+.ann-card {
+  background: var(--c-bg-card);
+  border-radius: 20rpx;
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+  border: 1rpx solid var(--c-border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.ann-meta {
+  display: flex;
+  align-items: center;
+}
+
+.ann-date {
+  font-size: 22rpx;
+  color: var(--c-text-hint);
+  background: var(--c-bg);
+  padding: 4rpx 14rpx;
+  border-radius: 10rpx;
+}
+
+.ann-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--c-text-h);
+}
+
+.ann-image {
+  width: 100%;
+  border-radius: 14rpx;
+  max-height: 600rpx;
+}
+
+.ann-content {
+  font-size: 26rpx;
+  color: var(--c-text-body);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
