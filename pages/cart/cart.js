@@ -77,9 +77,12 @@ Page({
       const openid = app.globalData.openid
       const orderNo = genOrderNo()
 
+      const ui = app.globalData.userInfo || {}
       const orderData = {
         orderNo,
         userId: openid,
+        userNickName: ui.nickName || '',
+        userAvatarUrl: ui.avatarUrl || '',
         status: 'done',
         overallNote: overallNote.trim(),
         foodItems: foodItems.map(i => ({

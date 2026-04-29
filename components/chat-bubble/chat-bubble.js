@@ -11,14 +11,20 @@ Component({
 
   data: {
     timeStr: '',
-    playing: false
+    playing: false,
+    voiceWidth: 160
   },
 
   observers: {
     'msg': function(msg) {
-      if (msg && msg.createdAt) {
-        this.setData({ timeStr: formatChatTime(msg.createdAt) })
+      if (!msg) return
+      const patch = {}
+      if (msg.createdAt) patch.timeStr = formatChatTime(msg.createdAt)
+      if (msg.type === 'voice') {
+        const dur = Math.max(1, Math.min(60, Number(msg.duration) || 1))
+        patch.voiceWidth = Math.round(96 + dur * 8)
       }
+      if (Object.keys(patch).length) this.setData(patch)
     }
   },
 

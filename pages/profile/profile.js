@@ -82,6 +82,37 @@ Page({
     wx.navigateTo({ url: `/pages/order-detail/order-detail?id=${e.currentTarget.dataset.id}` })
   },
 
+  deleteOrder(e) {
+    const id = e.currentTarget.dataset.id
+    if (!id) return
+    const target = this.data.orders.find(o => o._id === id)
+    const wasActive = target && target.status !== 'cancelled'
+    wx.showModal({
+      title: '删除订单',
+      content: wasActive ? '删除将同时取消该订单，确认吗？' : '确认删除该订单吗？',
+      confirmText: '删除',
+      confirmColor: '#E64545',
+      success: res => {
+        if (!res.confirm) return
+        const db = wx.cloud.database()
+        const pre = wasActive
+          ? col('orders').doc(id).update({ data: { status: 'cancelled', updatedAt: db.serverDate() } })
+          : Promise.resolve()
+        pre
+          .then(() => col('orders').doc(id).remove())
+          .then(() => {
+            const orders = this.data.orders.filter(o => o._id !== id)
+            this.setData({ orders })
+            wx.showToast({ title: wasActive ? '已取消并删除' : '已删除', icon: 'success' })
+          })
+          .catch(err => {
+            console.error('删除订单失败', err)
+            wx.showToast({ title: '删除失败', icon: 'none' })
+          })
+      }
+    })
+  },
+
   goChat() {
     wx.switchTab({ url: '/pages/chat/chat' })
   },

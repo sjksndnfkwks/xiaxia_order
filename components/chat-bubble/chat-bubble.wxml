@@ -53,8 +53,12 @@
       </view>
 
       <!-- 语音 -->
-      <view class="bubble voice-bubble" wx:elif="{{msg.type === 'voice'}}" bindtap="playVoice">
-        <text class="voice-icon">{{playing ? '播放中' : '语音'}}</text>
+      <view class="bubble voice-bubble {{playing ? 'playing' : ''}}" wx:elif="{{msg.type === 'voice'}}" bindtap="playVoice" style="width: {{voiceWidth}}rpx;">
+        <view class="voice-wave">
+          <view class="wave-arc arc1"></view>
+          <view class="wave-arc arc2"></view>
+          <view class="wave-arc arc3"></view>
+        </view>
         <text class="voice-duration">{{msg.duration}}"</text>
       </view>
 

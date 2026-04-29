@@ -196,13 +196,56 @@
 }
 
 .voice-bubble {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 12rpx;
-  min-width: 120rpx;
+  min-width: 96rpx;
+  max-width: 100%;
+  padding: 14rpx 22rpx;
 }
 
-.voice-icon { font-size: 36rpx; }
+.voice-wave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44rpx;
+  height: 44rpx;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.wave-arc {
+  position: absolute;
+  border: 3rpx solid currentColor;
+  border-color: currentColor transparent transparent transparent;
+  border-radius: 50%;
+  transform: rotate(-45deg);
+  opacity: 0;
+}
+.other .wave-arc { color: var(--c-text-h); }
+.self  .wave-arc { color: var(--c-primary); }
+
+.wave-arc.arc1 { width: 14rpx; height: 14rpx; }
+.wave-arc.arc2 { width: 26rpx; height: 26rpx; }
+.wave-arc.arc3 { width: 38rpx; height: 38rpx; }
+
+/* 静态：只显示最小弧 */
+.voice-bubble:not(.playing) .wave-arc.arc1 { opacity: 1; }
+
+/* 播放时：依次扩散 */
+.voice-bubble.playing .wave-arc {
+  animation: voiceWave 1.2s infinite ease-out;
+}
+.voice-bubble.playing .wave-arc.arc1 { animation-delay: 0s; }
+.voice-bubble.playing .wave-arc.arc2 { animation-delay: 0.4s; }
+.voice-bubble.playing .wave-arc.arc3 { animation-delay: 0.8s; }
+
+@keyframes voiceWave {
+  0%   { opacity: 0; transform: rotate(-45deg) scale(0.4); }
+  40%  { opacity: 1; }
+  100% { opacity: 0; transform: rotate(-45deg) scale(1.1); }
+}
 
 .voice-duration { font-size: 26rpx; }
 

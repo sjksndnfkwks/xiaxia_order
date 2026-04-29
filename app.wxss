@@ -69,8 +69,8 @@ page {
   --grad-card:    linear-gradient(180deg, #FFFFFF 0%, #FBF8EF 100%);
   --grad-deep:    linear-gradient(160deg, #0F0E26 0%, #1D1B3B 60%, #2D2B5B 100%);
 
-  /* ── 字体：系统字优先（iOS 苹方 / Android 思源） ── */
-  font-family: -apple-system, 'PingFang SC', 'HarmonyOS Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', system-ui, sans-serif;
+  /* ── 字体：宋体 ── */
+  font-family: '-apple-system', 'PingFang SC', 'HarmonyOS Sans SC', 'Source Han Sans CN', 'Noto Sans CJK SC', system-ui, sans-serif;
   font-size: 28rpx;
   color: var(--c-text-body);
   background-color: var(--c-bg);

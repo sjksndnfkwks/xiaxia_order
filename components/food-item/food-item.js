@@ -7,7 +7,8 @@ Component({
 
   data: {
     quantity: 0,
-    note: ''
+    note: '',
+    previewing: false
   },
 
   lifetimes: {
@@ -41,6 +42,17 @@ Component({
     onMinus() {
       cartStore.removeItem(this.properties.item._id)
     },
+
+    previewImg() {
+      if (!this.properties.item.imageUrl) return
+      this.setData({ previewing: true })
+    },
+
+    closePreview() {
+      this.setData({ previewing: false })
+    },
+
+    _stopPropagation() {},
 
     editNote() {
       const itemId = this.properties.item._id

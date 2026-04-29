@@ -1,5 +1,5 @@
 <view class="food-item">
-  <image class="food-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
+  <image class="food-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load catchtap="previewImg" />
   <view class="food-info">
     <text class="food-name">{{item.name}}</text>
     <text class="food-desc" wx:if="{{item.description}}">{{item.description}}</text>
@@ -16,5 +16,9 @@
     </view>
     <view class="add-btn" wx:else catchtap="onPlus">＋</view>
     <view class="note-btn" wx:if="{{quantity > 0}}" catchtap="editNote">备注</view>
+  </view>
+
+  <view wx:if="{{previewing}}" class="img-preview-mask" catchtap="closePreview">
+    <image class="img-preview" src="{{item.imageUrl}}" mode="aspectFit" catchtap="_stopPropagation" />
   </view>
 </view>

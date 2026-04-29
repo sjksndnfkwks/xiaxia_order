@@ -22,7 +22,7 @@
     <textarea
       class="overall-note"
       value="{{overallNote}}"
-      placeholder="给老板留个言，比如多加点香菜~"
+      placeholder="有没有什么忌口呀"
       maxlength="100"
       bindinput="onOverallNoteInput"
     />

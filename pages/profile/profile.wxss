@@ -115,6 +115,39 @@
   color: var(--c-text-h);
 }
 
+.order-no-line {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.order-buyer-avatar {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  background: var(--c-primary-pale);
+  flex-shrink: 0;
+}
+
+.order-buyer-name {
+  font-size: 24rpx;
+  color: var(--c-text-sub);
+  max-width: 180rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.order-delete {
+  font-size: 24rpx;
+  color: #E64545;
+  padding: 6rpx 16rpx;
+  border: 1rpx solid #E64545;
+  border-radius: 8rpx;
+  margin-left: 12rpx;
+  line-height: 1.4;
+}
+
 .order-time {
   font-size: 22rpx;
   color: var(--c-text-hint);

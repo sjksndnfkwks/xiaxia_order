@@ -33,12 +33,17 @@
         data-id="{{item._id}}"
       >
         <view class="order-row-left">
-          <text class="order-no">{{item.orderNo}}</text>
+          <view class="order-no-line">
+            <text class="order-no">{{item.orderNo}}</text>
+            <image class="order-buyer-avatar" src="{{item.userAvatarUrl || userInfo.avatarUrl || '/assets/images/stitch-wave.png'}}" mode="aspectFill" />
+            <text class="order-buyer-name">{{item.userNickName || userInfo.nickName || ''}}</text>
+          </view>
           <text class="order-time">{{item.createdAtStr}}</text>
           <text class="order-summary">菜{{item.totalFoodCount}}件 零食{{item.totalSnackCount}}件</text>
         </view>
         <view class="order-row-right">
           <view class="status-tag status-{{item.status}}">{{statusText[item.status]}}</view>
+          <text class="order-delete" catchtap="deleteOrder" data-id="{{item._id}}">删除</text>
           <text class="order-arrow">›</text>
         </view>
       </view>
