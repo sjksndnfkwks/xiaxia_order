@@ -23,11 +23,50 @@ App({
     // 2. 恢复购物车
     cartStore.restore()
 
-    // 3. 执行登录，登录完成后检查纪念日
-    this._doLogin()
+    // 3. 登录策略：
+    //    - 退出后(needLogin)：不自动登录，等用户在"我的"页主动登录
+    //    - 测试账号：使用本地虚拟身份
+    //    - 否则：正常调用 login 云函数
+    if (wx.getStorageSync('needLogin')) {
+      this.globalData.loginReady = true
+      this.globalData.loginCallbacks.forEach(cb => cb({}))
+      this.globalData.loginCallbacks = []
+    } else if (wx.getStorageSync('testLogin')) {
+      this.applyTestLogin()
+    } else {
+      this._doLogin()
+    }
   },
 
-  _doLogin() {
+  isLoggedIn() {
+    return !!this.globalData.openid
+  },
+
+  applyTestLogin() {
+    this.globalData.openid = 'test_user_001'
+    this.globalData.isAdmin = false
+    this.globalData.userInfo = {
+      _id: 'test_user_001',
+      _openid: 'test_user_001',
+      nickName: '测试账号',
+      avatarUrl: '/assets/images/stitch-wave.png',
+      _isTest: true
+    }
+    this.globalData.loginReady = true
+    this.globalData.loginCallbacks.forEach(cb => cb({ openid: this.globalData.openid, isAdmin: false }))
+    this.globalData.loginCallbacks = []
+  },
+
+  relogin() {
+    wx.removeStorageSync('needLogin')
+    wx.removeStorageSync('testLogin')
+    this.globalData.loginReady = false
+    return new Promise((resolve, reject) => {
+      this._doLogin(resolve, reject)
+    })
+  },
+
+  _doLogin(onDone, onFail) {
     wx.cloud.callFunction({
       name: 'login',
       success: res => {
@@ -50,6 +89,8 @@ App({
         if (isAdmin) {
           this._requestAdminSubscribe()
         }
+
+        if (typeof onDone === 'function') onDone({ openid, isAdmin })
       },
       fail: err => {
         console.error('login cloud function failed', err)
@@ -57,6 +98,7 @@ App({
         this.globalData.loginReady = true
         this.globalData.loginCallbacks.forEach(cb => cb({}))
         this.globalData.loginCallbacks = []
+        if (typeof onFail === 'function') onFail(err)
       }
     })
   },

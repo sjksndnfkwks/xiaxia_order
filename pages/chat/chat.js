@@ -1,6 +1,7 @@
 const app = getApp()
 const { db, uploadFile, callFn } = require('../../utils/cloud')
 const { EMOJI_LIST } = require('../../utils/constants')
+const { formatChatTime } = require('../../utils/time')
 
 Page({
   data: {
@@ -8,6 +9,7 @@ Page({
     myOpenid: '',
     myAvatar: '',
     adminAvatar: '/assets/images/stitch-banner.png',
+    peerAvatar: '/assets/images/stitch-banner.png',
     inputText: '',
     voiceMode: false,
     recording: false,
@@ -18,28 +20,53 @@ Page({
     quotingMsg: null,
     multiSelect: false,
     selectedIds: [],
-    // 长按菜单
     menuShow: false,
     menuX: 0,
     menuY: 0,
     menuMsg: null,
     menuCanCopy: false,
-    // 合并详情
-    mergedDetail: null
+    mergedDetail: null,
+    showFullscreenBtn: false,
+    fullscreenEdit: false,
+    fullscreenInput: '',
+    recordMode: 'send',
+    // 管理员侧边栏
+    isAdmin: false,
+    sidebarOpen: false,
+    contacts: [],
+    currentUserId: '',
+    currentContact: null,
+    // 备注编辑
+    remarkEditing: null,
+    remarkInput: ''
   },
 
   _watcher: null,
   _recorder: null,
   _cancelled: false,
+  _textBtnRect: null,
+  _sendBtnRect: null,
+  _siManager: null,
+  _siResultText: '',
 
   async onLoad() {
     await app.waitLogin()
-    const { openid, userInfo } = app.globalData
+    const { openid, userInfo, isAdmin } = app.globalData
     this.setData({
       myOpenid: openid,
-      myAvatar: userInfo?.avatarUrl || ''
+      myAvatar: userInfo?.avatarUrl || '',
+      isAdmin: !!isAdmin,
+      sidebarOpen: !!isAdmin
     })
-    this._startWatch()
+    if (isAdmin) {
+      await this._loadContacts()
+    } else {
+      this.setData({
+        currentUserId: openid,
+        peerAvatar: this.data.adminAvatar
+      })
+      this._startWatch()
+    }
   },
 
   onShow() {
@@ -50,22 +77,140 @@ Page({
     if (latestAvatar !== this.data.myAvatar) {
       this.setData({ myAvatar: latestAvatar })
     }
-    if (!this._watcher && app.globalData.openid) {
+    if (app.globalData.isAdmin) {
+      this._loadContacts()
+      if (this.data.currentUserId && !this._watcher) this._startWatch()
+    } else if (!this._watcher && app.globalData.openid) {
       this._startWatch()
     }
   },
 
-  onHide() {
-    this._closeWatch()
+  onHide() { this._closeWatch() },
+  onUnload() { this._closeWatch() },
+
+  // ── 联系人列表（管理员） ──
+  async _loadContacts() {
+    try {
+      const res = await db.collection('conversations').orderBy('lastMessageAt', 'desc').limit(100).get()
+      const convs = res.data || []
+      const userIds = [...new Set(convs.map(c => c.userId).filter(Boolean))]
+      let userMap = {}
+      if (userIds.length) {
+        // 分批查询 users（云数据库 in 限制）
+        const chunks = []
+        for (let i = 0; i < userIds.length; i += 20) chunks.push(userIds.slice(i, i + 20))
+        const results = await Promise.all(
+          chunks.map(ids => db.collection('users').where({ _openid: db.command.in(ids) }).get())
+        )
+        results.forEach(r => (r.data || []).forEach(u => { userMap[u._openid] = u }))
+      }
+      const contacts = convs.map(c => {
+        const u = userMap[c.userId] || {}
+        return {
+          userId: c.userId,
+          convId: c._id,
+          nickName: u.nickName || '微信用户',
+          avatarUrl: u.avatarUrl || '/assets/images/stitch-wave.png',
+          remark: c.adminRemark || '',
+          displayName: c.adminRemark || u.nickName || '微信用户',
+          lastMessage: c.lastMessage || '',
+          lastTimeStr: c.lastMessageAt ? formatChatTime(c.lastMessageAt) : '',
+          unread: c.unreadByAdmin || 0
+        }
+      })
+      const patch = { contacts }
+      // 如果当前选中的联系人已存在，更新 currentContact
+      if (this.data.currentUserId) {
+        const cur = contacts.find(x => x.userId === this.data.currentUserId)
+        if (cur) {
+          patch.currentContact = cur
+          patch.peerAvatar = cur.avatarUrl
+        }
+      }
+      this.setData(patch)
+    } catch (e) {
+      console.error('load contacts error', e)
+    }
   },
 
-  onUnload() {
+  toggleSidebar() {
+    const next = !this.data.sidebarOpen
+    this.setData({ sidebarOpen: next })
+    if (next) this._loadContacts()
+  },
+
+  selectContact(e) {
+    const userId = e.currentTarget.dataset.id
+    if (!userId || userId === this.data.currentUserId) {
+      this.setData({ sidebarOpen: false })
+      return
+    }
+    const contact = this.data.contacts.find(c => c.userId === userId)
     this._closeWatch()
+    this.setData({
+      currentUserId: userId,
+      currentContact: contact || null,
+      peerAvatar: contact?.avatarUrl || this.data.adminAvatar,
+      messages: [],
+      sidebarOpen: false,
+      multiSelect: false,
+      selectedIds: []
+    })
+    this._startWatch()
+    // 清除该联系人未读
+    db.collection('conversations').doc(`conv_${userId}`).update({
+      data: { unreadByAdmin: 0 }
+    }).catch(() => {})
+    const idx = this.data.contacts.findIndex(c => c.userId === userId)
+    if (idx >= 0) {
+      const updated = [...this.data.contacts]
+      updated[idx] = { ...updated[idx], unread: 0 }
+      this.setData({ contacts: updated })
+    }
+  },
+
+  // ── 备注编辑 ──
+  startEditRemark(e) {
+    const userId = e.currentTarget.dataset.id
+    const c = this.data.contacts.find(x => x.userId === userId)
+    if (!c) return
+    this.setData({ remarkEditing: c, remarkInput: c.remark || '' })
+  },
+
+  onRemarkInput(e) { this.setData({ remarkInput: e.detail.value }) },
+
+  cancelEditRemark() { this.setData({ remarkEditing: null, remarkInput: '' }) },
+
+  async saveRemark() {
+    const c = this.data.remarkEditing
+    if (!c) return
+    const remark = (this.data.remarkInput || '').trim()
+    try {
+      await db.collection('conversations').doc(c.convId).update({ data: { adminRemark: remark } })
+      const contacts = this.data.contacts.map(x => x.userId === c.userId
+        ? { ...x, remark, displayName: remark || x.nickName }
+        : x)
+      const patch = { contacts, remarkEditing: null, remarkInput: '' }
+      if (this.data.currentUserId === c.userId) {
+        patch.currentContact = contacts.find(x => x.userId === c.userId)
+      }
+      this.setData(patch)
+      wx.showToast({ title: '已保存', icon: 'success' })
+    } catch (err) {
+      console.error('save remark', err)
+      wx.showToast({ title: '保存失败', icon: 'none' })
+    }
   },
 
   _startWatch() {
-    const openid = app.globalData.openid
-    const conversationId = `conv_${openid}`
+    const isAdmin = app.globalData.isAdmin
+    let conversationId
+    if (isAdmin) {
+      if (!this.data.currentUserId) return
+      conversationId = `conv_${this.data.currentUserId}`
+    } else {
+      conversationId = `conv_${app.globalData.openid}`
+    }
 
     this._watcher = db.collection('messages')
       .where({ conversationId })
@@ -79,6 +224,7 @@ Page({
           this.setData({ messages: msgs }, () => {
             this.setData({ scrollId: 'msg-bottom' })
           })
+          if (app.globalData.isAdmin) this._loadContacts()
         },
         onError: err => {
           console.error('watch error', err)
@@ -95,9 +241,7 @@ Page({
     return isNaN(d.getTime()) ? 0 : d.getTime()
   },
 
-  // 给消息加 showTime 标记：首条或距前条 > 5 分钟时显示时间
   _processMessages(docs) {
-    const { formatChatTime } = require('../../utils/time')
     const FIVE_MIN = 5 * 60 * 1000
     let prevTime = 0
     return docs.map((m, i) => {
@@ -127,14 +271,55 @@ Page({
     this.setData({ inputText: e.detail.value, showEmoji: false, showExtra: false })
   },
 
+  onLineChange(e) {
+    const lines = (e.detail && e.detail.lineCount) || 0
+    const should = lines >= 7
+    if (should !== this.data.showFullscreenBtn) {
+      this.setData({ showFullscreenBtn: should })
+    }
+  },
+
+  openFullscreenEdit() {
+    this.setData({
+      fullscreenEdit: true,
+      fullscreenInput: this.data.inputText,
+      showEmoji: false,
+      showExtra: false
+    })
+  },
+
+  onFullscreenInput(e) {
+    this.setData({ fullscreenInput: e.detail.value })
+  },
+
+  cancelFullscreenEdit() {
+    this.setData({
+      inputText: this.data.fullscreenInput,
+      fullscreenEdit: false,
+      fullscreenInput: ''
+    })
+  },
+
+  sendFromFullscreen() {
+    const text = (this.data.fullscreenInput || '').trim()
+    this.setData({ fullscreenEdit: false, fullscreenInput: '', inputText: text })
+    if (text) this.sendText()
+  },
+
   async _sendMsg(data) {
-    const openid = app.globalData.openid
-    const conversationId = `conv_${openid}`
+    const isAdmin = app.globalData.isAdmin
+    const myOpenid = app.globalData.openid
+    const targetUserId = isAdmin ? this.data.currentUserId : myOpenid
+    if (!targetUserId) {
+      wx.showToast({ title: '请先选择联系人', icon: 'none' })
+      return
+    }
+    const conversationId = `conv_${targetUserId}`
 
     const msgData = {
       conversationId,
-      senderId: openid,
-      senderRole: app.globalData.isAdmin ? 'admin' : 'user',
+      senderId: myOpenid,
+      senderRole: isAdmin ? 'admin' : 'user',
       createdAt: db.serverDate(),
       recalled: false,
       ...data
@@ -143,17 +328,16 @@ Page({
     await db.collection('messages').add({ data: msgData })
 
     const preview = data.type === 'text' ? data.content : `[${data.type}]`
-    db.collection('conversations').doc(conversationId).set({
-      data: {
-        userId: openid,
-        lastMessage: preview,
-        lastMessageAt: db.serverDate(),
-        unreadByAdmin: db.command.inc(1),
-        createdAt: db.serverDate()
-      }
-    }).catch(() => {})
+    const convData = {
+      userId: targetUserId,
+      lastMessage: preview,
+      lastMessageAt: db.serverDate(),
+      createdAt: db.serverDate()
+    }
+    if (!isAdmin) convData.unreadByAdmin = db.command.inc(1)
+    db.collection('conversations').doc(conversationId).set({ data: convData }).catch(() => {})
 
-    if (!app.globalData.isAdmin) {
+    if (!isAdmin) {
       callFn('sendChatNotify', {
         messagePreview: preview.substring(0, 20),
         senderName: app.globalData.userInfo?.nickName || '虾虾'
@@ -177,17 +361,14 @@ Page({
     this._sendMsg(msgData)
   },
 
-  // 表情插入输入框（不关闭面板）
   insertEmoji(e) {
     const emoji = e.currentTarget.dataset.emoji
     this.setData({ inputText: this.data.inputText + emoji })
   },
 
-  // 退格删除最后一个字符
   deleteLastChar() {
     const text = this.data.inputText
     if (!text) return
-    // 正确处理 emoji（多字节字符）
     const arr = [...text]
     arr.pop()
     this.setData({ inputText: arr.join('') })
@@ -250,52 +431,130 @@ Page({
     this.setData({ showExtra: !this.data.showExtra, showEmoji: false })
   },
 
-  startRecord() {
-    const rm = wx.getRecorderManager()
-    this._recorder = rm
-    rm.start({ format: 'aac', duration: 60000 })
-    rm.onStart(() => this.setData({ recording: true }))
-    rm.onStop(async res => {
-      this.setData({ recording: false })
-      if (this._cancelled || !res.tempFilePath) return
-      wx.showLoading({ title: '发送中...' })
-      try {
-        const fileID = await uploadFile(res.tempFilePath, 'chat')
-        await this._sendMsg({
-          type: 'voice',
-          mediaUrl: fileID,
-          content: '[语音]',
-          duration: Math.round(res.duration / 1000)
-        })
-      } finally {
+  _getSiManager() {
+    if (this._siManager) return this._siManager
+    try {
+      const plugin = requirePlugin('WechatSI')
+      const mgr = plugin.getRecordRecognitionManager()
+      mgr.onRecognize(res => {
+        this._siResultText = res.result || this._siResultText
+      })
+      mgr.onStop(res => {
+        this._siResultText = res.result || this._siResultText
+        this._handleRecordStop({ tempFilePath: res.tempFilePath, duration: res.duration })
+      })
+      mgr.onError(() => {
+        this._siResultText = ''
         wx.hideLoading()
-      }
-    })
-    this._cancelled = false
+        this.setData({ recording: false, recordMode: 'send' })
+      })
+      this._siManager = mgr
+      return mgr
+    } catch (e) {
+      return null
+    }
   },
 
-  stopRecord() {
-    if (this._recorder) {
-      this._cancelled = false
-      this._recorder.stop()
+  startRecord() {
+    this._cancelled = false
+    this._siResultText = ''
+    this.setData({ recordMode: 'send' })
+
+    const si = this._getSiManager()
+    if (si) {
+      this._recorder = { _isSi: true, stop: () => si.stop() }
+      si.start({ duration: 60000, lang: 'zh_CN' })
+      this.setData({ recording: true })
+    } else {
+      const rm = wx.getRecorderManager()
+      this._recorder = rm
+      rm.start({ format: 'aac', duration: 60000 })
+      rm.onStart(() => this.setData({ recording: true }))
+      rm.onStop(res => {
+        this._handleRecordStop({ tempFilePath: res.tempFilePath, duration: res.duration })
+      })
     }
+
+    setTimeout(() => {
+      const q = wx.createSelectorQuery().in(this)
+      q.select('.record-action-text').boundingClientRect()
+      q.select('.record-action-send').boundingClientRect()
+      q.exec(rects => {
+        this._textBtnRect = rects[0]
+        this._sendBtnRect = rects[1]
+      })
+    }, 80)
+  },
+
+  onRecordMove(e) {
+    if (!this.data.recording) return
+    const t = e.touches && e.touches[0]
+    if (!t) return
+    const x = t.clientX, y = t.clientY
+    const inRect = (r) => r && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom
+    let mode = 'send'
+    if (inRect(this._textBtnRect)) mode = 'text'
+    else if (inRect(this._sendBtnRect)) mode = 'send'
+    if (mode !== this.data.recordMode) this.setData({ recordMode: mode })
+  },
+
+  stopRecord(e) {
+    if (!this._recorder) return
+    // 用松手时的坐标兜底判断模式（PC 端 touchmove 不一定连续触发）
+    const t = e && e.changedTouches && e.changedTouches[0]
+    if (t) {
+      const inRect = (r) => r && t.clientX >= r.left && t.clientX <= r.right && t.clientY >= r.top && t.clientY <= r.bottom
+      if (inRect(this._textBtnRect)) this.setData({ recordMode: 'text' })
+      else if (inRect(this._sendBtnRect)) this.setData({ recordMode: 'send' })
+    }
+    this._cancelled = false
+    this._recorder.stop()
   },
 
   cancelRecord() {
-    if (this._recorder) {
-      this._cancelled = true
-      this._recorder.stop()
-      this.setData({ recording: false })
+    if (!this._recorder) return
+    this._cancelled = true
+    this._recorder.stop()
+    this.setData({ recording: false, recordMode: 'send' })
+  },
+
+  async _handleRecordStop(res) {
+    const mode = this.data.recordMode
+    this.setData({ recording: false, recordMode: 'send' })
+    if (this._cancelled || !res || !res.tempFilePath) return
+
+    if (mode === 'text') {
+      const text = (this._siResultText || '').trim()
+      if (text) {
+        this.setData({ inputText: (this.data.inputText || '') + text })
+      } else {
+        wx.showToast({
+          title: this._siManager ? '未识别到内容' : '请先开通同声传译插件',
+          icon: 'none'
+        })
+      }
+      return
+    }
+
+    wx.showLoading({ title: '发送中...' })
+    try {
+      const fileID = await uploadFile(res.tempFilePath, 'chat')
+      await this._sendMsg({
+        type: 'voice',
+        mediaUrl: fileID,
+        content: '[语音]',
+        duration: Math.round((res.duration || 1000) / 1000)
+      })
+    } finally {
+      wx.hideLoading()
     }
   },
 
-  // ── 长按浮层菜单 ──
   noop() {},
 
   onBubbleLongPress(e) {
     const { msg, x, y } = e.detail
     if (!msg || msg.recalled) return
-    // 菜单大小约 220x180，根据点击位置自适应
     const winInfo = wx.getWindowInfo ? wx.getWindowInfo() : { windowWidth: 375, windowHeight: 667 }
     const menuW = 160
     const menuH = 200
@@ -336,7 +595,6 @@ Page({
     if (msg) this._deleteMessage(msg._id)
   },
 
-  // ── 合并消息 ──
   mergeSelected() {
     const ids = this.data.selectedIds
     if (ids.length < 2) return
@@ -361,7 +619,6 @@ Page({
     this.setData({ mergedDetail: null })
   },
 
-  // ── 多选：tap 气泡 ──
   onBubbleSelect(e) {
     const { msgId } = e.detail
     const ids = [...this.data.selectedIds]

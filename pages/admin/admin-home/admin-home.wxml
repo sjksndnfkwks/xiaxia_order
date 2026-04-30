@@ -70,14 +70,6 @@
       </view>
       <text class="menu-arrow">›</text>
     </view>
-    <view class="menu-divider"></view>
-    <view class="menu-item" bindtap="goChat">
-      <view class="menu-info">
-        <text class="menu-title">聊天消息</text>
-        <text class="menu-desc">查看和回复用户消息</text>
-      </view>
-      <text class="menu-arrow">›</text>
-    </view>
   </view>
 
   <!-- 订阅消息管理 -->

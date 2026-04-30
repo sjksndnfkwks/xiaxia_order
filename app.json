@@ -52,11 +52,17 @@
   "window": {
     "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#FFFFFF",
-    "navigationBarTitleText": "虾虾的626小食堂",
+    "navigationBarTitleText": "repeat的食堂",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#FDFBF5"
   },
   "usingComponents": {},
+  "plugins": {
+    "WechatSI": {
+      "version": "0.3.5",
+      "provider": "wx069ba97219f66d99"
+    }
+  },
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents"
 }

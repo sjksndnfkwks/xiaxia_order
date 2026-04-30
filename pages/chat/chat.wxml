@@ -1,7 +1,79 @@
 <view class="chat-page">
+  <!-- 管理员侧边栏开关 -->
+  <view wx:if="{{isAdmin}}" class="sidebar-toggle" bindtap="toggleSidebar">
+    <text>{{sidebarOpen ? '✕' : '☰'}}</text>
+  </view>
+  <view wx:if="{{isAdmin && currentContact}}" class="conv-title">
+    <image class="conv-title-avatar" src="{{currentContact.avatarUrl}}" mode="aspectFill" />
+    <text class="conv-title-name">{{currentContact.displayName}}</text>
+  </view>
+  <view wx:elif="{{isAdmin}}" class="conv-title">
+    <text class="conv-title-name conv-title-empty">未选择联系人</text>
+  </view>
+
+  <!-- 侧边栏 -->
+  <view wx:if="{{isAdmin && sidebarOpen}}" class="sidebar-mask" bindtap="toggleSidebar"></view>
+  <view wx:if="{{isAdmin}}" class="sidebar {{sidebarOpen ? 'sidebar-open' : ''}}" catchtap="noop">
+    <view class="sidebar-header">
+      <text class="sidebar-title">联系人</text>
+    </view>
+    <scroll-view class="sidebar-list" scroll-y>
+      <view wx:if="{{contacts.length === 0}}" class="sidebar-empty">
+        <text>还没有用户给你发过消息</text>
+      </view>
+      <view
+        wx:for="{{contacts}}"
+        wx:key="userId"
+        class="sidebar-item {{currentUserId === item.userId ? 'sidebar-item-active' : ''}}"
+        data-id="{{item.userId}}"
+        bindtap="selectContact"
+        bindlongpress="startEditRemark"
+      >
+        <image class="sidebar-avatar" src="{{item.avatarUrl}}" mode="aspectFill" />
+        <view class="sidebar-info">
+          <view class="sidebar-row1">
+            <text class="sidebar-name">{{item.displayName}}</text>
+            <text class="sidebar-time">{{item.lastTimeStr}}</text>
+          </view>
+          <view class="sidebar-row2">
+            <text class="sidebar-preview">{{item.lastMessage}}</text>
+            <view wx:if="{{item.unread > 0}}" class="sidebar-unread">{{item.unread}}</view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    <view class="sidebar-hint">长按联系人可修改备注</view>
+  </view>
+
+  <!-- 备注编辑弹窗 -->
+  <view wx:if="{{remarkEditing}}" class="remark-mask" bindtap="cancelEditRemark">
+    <view class="remark-card" catchtap="noop">
+      <view class="remark-title">设置备注</view>
+      <text class="remark-sub">{{remarkEditing.nickName}}</text>
+      <input
+        class="remark-input"
+        value="{{remarkInput}}"
+        placeholder="输入备注名"
+        bindinput="onRemarkInput"
+        focus
+      />
+      <view class="remark-actions">
+        <view class="remark-btn remark-cancel" bindtap="cancelEditRemark">取消</view>
+        <view class="remark-btn remark-save" bindtap="saveRemark">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 管理员未选联系人提示 -->
+  <view wx:if="{{isAdmin && !currentUserId}}" class="no-contact-tip">
+    <text class="no-contact-icon">💬</text>
+    <text class="no-contact-text">从左侧选择一个联系人开始聊天</text>
+  </view>
+
   <!-- 消息列表 -->
   <scroll-view
-    class="msg-list"
+    wx:if="{{!isAdmin || currentUserId}}"
+    class="msg-list {{isAdmin ? 'msg-list-admin' : ''}}"
     scroll-y
     scroll-into-view="{{scrollId}}"
     scroll-with-animation
@@ -15,7 +87,7 @@
         id="msg-{{item._id}}"
         msg="{{item}}"
         isSelf="{{item.senderId === myOpenid}}"
-        avatarUrl="{{item.senderId === myOpenid ? myAvatar : adminAvatar}}"
+        avatarUrl="{{item.senderId === myOpenid ? myAvatar : peerAvatar}}"
         multiSelect="{{multiSelect}}"
         selected="{{item.selected}}"
         bind:longpress="onBubbleLongPress"
@@ -37,12 +109,17 @@
   </view>
 
   <!-- 输入工具栏（多选模式下隐藏） -->
-  <view class="input-bar" wx:if="{{!multiSelect}}">
-    <view class="icon-btn" bindtap="toggleVoice">
-      <text>{{voiceMode ? '⌨️' : '🎙'}}</text>
+  <view class="input-bar" wx:if="{{!multiSelect && (!isAdmin || currentUserId)}}">
+    <view class="left-stack">
+      <view wx:if="{{showFullscreenBtn}}" class="icon-btn fullscreen-btn" bindtap="openFullscreenEdit">
+        <text>⛶</text>
+      </view>
+      <view class="icon-btn" bindtap="toggleVoice">
+        <text>{{voiceMode ? '⌨️' : '🎙'}}</text>
+      </view>
     </view>
 
-    <input
+    <textarea
       wx:if="{{!voiceMode}}"
       class="text-input"
       value="{{inputText}}"
@@ -51,17 +128,24 @@
       bindinput="onInput"
       bindconfirm="sendText"
       confirm-type="send"
+      confirm-hold="{{false}}"
+      auto-height
+      show-confirm-bar="{{false}}"
       adjust-position
+      cursor-spacing="20"
+      maxlength="-1"
+      bindlinechange="onLineChange"
     />
 
     <view
       wx:else
       class="voice-btn {{recording ? 'recording' : ''}}"
       bindtouchstart="startRecord"
+      bindtouchmove="onRecordMove"
       bindtouchend="stopRecord"
       bindtouchcancel="cancelRecord"
     >
-      <text>{{recording ? '松开发送' : '按住说话'}}</text>
+      <text>{{recording ? (recordMode === 'text' ? '松开转文字' : '松开发送') : '按住说话'}}</text>
     </view>
 
     <view class="icon-btn" bindtap="toggleEmoji">
@@ -83,6 +167,43 @@
     <text class="ms-count">已选 {{selectedIds.length}} 条</text>
     <view class="ms-action ms-merge {{selectedIds.length < 2 ? 'ms-disabled' : ''}}" bindtap="mergeSelected">合并</view>
     <view class="ms-action ms-delete {{selectedIds.length === 0 ? 'ms-disabled' : ''}}" bindtap="deleteSelected">删除</view>
+  </view>
+
+  <!-- 录音浮层（按住说话时显示） -->
+  <view wx:if="{{recording}}" class="record-overlay">
+    <view class="record-actions">
+      <view class="record-action record-action-text {{recordMode === 'text' ? 'record-action-active' : ''}}">
+        <view class="record-action-icon">📝</view>
+        <text class="record-action-label">语音转文字</text>
+      </view>
+      <view class="record-action record-action-send {{recordMode === 'send' ? 'record-action-active' : ''}}">
+        <view class="record-action-icon">🎤</view>
+        <text class="record-action-label">松开发送</text>
+      </view>
+    </view>
+    <view class="record-hint">
+      {{recordMode === 'text' ? '松手将语音转为文字' : '上滑到「语音转文字」可转换成文字'}}
+    </view>
+  </view>
+
+  <!-- 全屏编辑弹窗 -->
+  <view wx:if="{{fullscreenEdit}}" class="fs-edit-mask">
+    <view class="fs-edit-card">
+      <view class="fs-edit-header">
+        <view class="fs-edit-cancel" bindtap="cancelFullscreenEdit">取消</view>
+        <text class="fs-edit-title">编辑消息</text>
+        <view class="fs-edit-send" bindtap="sendFromFullscreen">发送</view>
+      </view>
+      <textarea
+        class="fs-edit-textarea"
+        value="{{fullscreenInput}}"
+        bindinput="onFullscreenInput"
+        focus="{{fullscreenEdit}}"
+        placeholder="输入消息..."
+        maxlength="-1"
+        show-confirm-bar="{{false}}"
+      />
+    </view>
   </view>
 
   <!-- 长按浮层菜单 -->

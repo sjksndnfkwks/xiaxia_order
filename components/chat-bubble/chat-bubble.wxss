@@ -95,6 +95,10 @@
 .bubble-text {
   font-size: 30rpx;
   line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  display: block;
 }
 
 .other .bubble-text { color: var(--c-text-h); }

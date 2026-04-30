@@ -1,9 +1,19 @@
 <!-- 顶部banner -->
 <view class="profile-header">
-  <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+  <button
+    wx:if="{{loggedIn}}"
+    class="avatar-btn"
+    open-type="chooseAvatar"
+    bindchooseavatar="onChooseAvatar"
+  >
     <image class="avatar" src="{{userInfo.avatarUrl || '/assets/images/stitch-wave.png'}}" mode="aspectFill" />
   </button>
+  <view wx:else class="avatar-btn avatar-btn-guest" bindtap="showLoginSheet">
+    <view class="avatar avatar-guest"></view>
+  </view>
+
   <input
+    wx:if="{{loggedIn}}"
     class="nickname-input"
     type="nickname"
     value="{{userInfo.nickName}}"
@@ -11,14 +21,22 @@
     placeholder-class="nickname-placeholder"
     bindchange="onNicknameBlur"
   />
-  <text class="tap-hint">点头像换图，点名字改昵称</text>
+  <view wx:else class="nickname-guest-line" bindtap="showLoginSheet">
+    <text class="nickname-guest">未登录</text>
+    <text class="nickname-guest-hint">点击头像登录</text>
+  </view>
+
+  <text wx:if="{{loggedIn}}" class="tap-hint">点头像换图，点名字改昵称</text>
 </view>
 
 <view class="content-area">
   <!-- 我的订单 -->
   <view class="section-card">
     <view class="section-title">我的订单</view>
-    <view wx:if="{{loadingOrders}}" class="loading-wrap">
+    <view wx:if="{{!loggedIn}}" class="empty-tip">
+      <text>登录后查看订单</text>
+    </view>
+    <view wx:elif="{{loadingOrders}}" class="loading-wrap">
       <text>加载中...</text>
     </view>
     <view wx:elif="{{orders.length === 0}}" class="empty-tip">
@@ -50,8 +68,8 @@
     </view>
   </view>
 
-  <!-- 想吃清单入口 -->
-  <view class="section-card">
+  <!-- 想吃清单/公告入口 -->
+  <view wx:if="{{loggedIn}}" class="section-card">
     <view class="quick-row" bindtap="goWishlist">
       <text class="quick-label">想吃清单</text>
       <text class="quick-arrow">›</text>
@@ -63,10 +81,22 @@
   </view>
 
   <!-- 管理员入口 -->
-  <view class="section-card" wx:if="{{isAdmin}}">
+  <view class="section-card" wx:if="{{loggedIn && isAdmin}}">
     <view class="admin-entry" bindtap="goAdmin">
       <text class="admin-label">进入管理后台</text>
       <text class="admin-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 账号管理 -->
+  <view class="section-card">
+    <view wx:if="{{loggedIn}}" class="quick-row logout-row" bindtap="logout">
+      <text class="quick-label logout-label">退出账号</text>
+      <text class="quick-arrow">›</text>
+    </view>
+    <view wx:else class="quick-row logout-row" bindtap="showLoginSheet">
+      <text class="quick-label login-label">登录账号</text>
+      <text class="quick-arrow">›</text>
     </view>
   </view>
 </view>

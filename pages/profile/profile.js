@@ -14,24 +14,25 @@ Page({
 
   async onLoad() {
     await app.waitLogin()
-    this.setData({
-      userInfo: app.globalData.userInfo || {},
-      isAdmin: app.globalData.isAdmin
-    })
-    this._loadOrders()
+    this._refreshState()
+    if (app.globalData.openid) this._loadOrders()
+    else this.setData({ loadingOrders: false })
   },
 
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3, hidden: false })
     }
+    this._refreshState()
+    if (app.globalData.openid) this._loadOrders()
+  },
+
+  _refreshState() {
     this.setData({
+      loggedIn: !!app.globalData.openid,
       userInfo: app.globalData.userInfo || {},
       isAdmin: app.globalData.isAdmin
     })
-    if (app.globalData.openid) {
-      this._loadOrders()
-    }
   },
 
   async _loadOrders() {
@@ -127,5 +128,57 @@ Page({
 
   goAdmin() {
     wx.navigateTo({ url: '/pages/admin/admin-home/admin-home' })
+  },
+
+  logout() {
+    wx.showModal({
+      title: '退出账号',
+      content: '退出后订单仍保留在云端，重新用同一微信号登录后会自动恢复。',
+      confirmText: '退出',
+      confirmColor: '#E64545',
+      success: res => {
+        if (!res.confirm) return
+        // 只清账号身份相关；保留购物车、弹窗已读等本地状态
+        wx.setStorageSync('needLogin', true)
+        wx.removeStorageSync('testLogin')
+        app.globalData.openid = null
+        app.globalData.isAdmin = false
+        app.globalData.userInfo = null
+        this.setData({ loggedIn: false, userInfo: {}, isAdmin: false, orders: [], loadingOrders: false })
+        wx.showToast({ title: '已退出', icon: 'success' })
+      }
+    })
+  },
+
+  showLoginSheet() {
+    wx.showActionSheet({
+      itemList: ['用微信账号登录', '用测试账号登录'],
+      success: res => {
+        if (res.tapIndex === 0) this.loginWechat()
+        else if (res.tapIndex === 1) this.loginTest()
+      }
+    })
+  },
+
+  loginWechat() {
+    wx.showLoading({ title: '登录中', mask: true })
+    app.relogin().then(() => {
+      wx.hideLoading()
+      this._refreshState()
+      this._loadOrders()
+      wx.showToast({ title: '登录成功', icon: 'success' })
+    }).catch(() => {
+      wx.hideLoading()
+      wx.showToast({ title: '登录失败', icon: 'none' })
+    })
+  },
+
+  loginTest() {
+    wx.setStorageSync('testLogin', true)
+    wx.removeStorageSync('needLogin')
+    app.applyTestLogin()
+    this._refreshState()
+    this._loadOrders()
+    wx.showToast({ title: '已切换到测试账号', icon: 'success' })
   }
 })

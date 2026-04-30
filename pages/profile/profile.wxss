@@ -55,7 +55,7 @@
 
 .content-area {
   margin-top: 0;
-  padding: 20rpx 24rpx 40rpx;
+  padding: 20rpx 24rpx calc(140rpx + env(safe-area-inset-bottom));
 }
 
 .section-card {
@@ -178,6 +178,8 @@
 
 .quick-icon, .admin-icon { font-size: 44rpx; }
 .quick-label, .admin-label { flex: 1; font-size: 30rpx; color: var(--c-text-body); }
+.logout-label { color: #E64545; }
+.logout-row { border-bottom: none; }
 .quick-arrow, .admin-arrow { font-size: 36rpx; color: var(--c-border); }
 
 .admin-entry {
@@ -195,3 +197,39 @@
 }
 .admin-icon { color: var(--c-primary); }
 .admin-arrow { color: var(--c-primary-light); }
+
+/* ── 未登录态 ── */
+.avatar-btn-guest {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-guest {
+  width: 144rpx;
+  height: 144rpx;
+  border-radius: 50%;
+  border: 4rpx solid var(--c-border);
+  background: #D8D8DC;
+}
+
+.nickname-guest-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  padding: 4rpx 0;
+}
+
+.nickname-guest {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--c-text-h);
+}
+
+.nickname-guest-hint {
+  font-size: 22rpx;
+  color: var(--c-text-hint);
+}
+
+.login-label { color: var(--c-primary); font-weight: 600; }
