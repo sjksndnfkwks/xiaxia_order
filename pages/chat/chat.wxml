@@ -141,11 +141,10 @@
       wx:else
       class="voice-btn {{recording ? 'recording' : ''}}"
       bindtouchstart="startRecord"
-      bindtouchmove="onRecordMove"
       bindtouchend="stopRecord"
       bindtouchcancel="cancelRecord"
     >
-      <text>{{recording ? (recordMode === 'text' ? '松开转文字' : '松开发送') : '按住说话'}}</text>
+      <text>{{recording ? '松开发送' : '按住说话'}}</text>
     </view>
 
     <view class="icon-btn" bindtap="toggleEmoji">
@@ -171,19 +170,8 @@
 
   <!-- 录音浮层（按住说话时显示） -->
   <view wx:if="{{recording}}" class="record-overlay">
-    <view class="record-actions">
-      <view class="record-action record-action-text {{recordMode === 'text' ? 'record-action-active' : ''}}">
-        <view class="record-action-icon">📝</view>
-        <text class="record-action-label">语音转文字</text>
-      </view>
-      <view class="record-action record-action-send {{recordMode === 'send' ? 'record-action-active' : ''}}">
-        <view class="record-action-icon">🎤</view>
-        <text class="record-action-label">松开发送</text>
-      </view>
-    </view>
-    <view class="record-hint">
-      {{recordMode === 'text' ? '松手将语音转为文字' : '上滑到「语音转文字」可转换成文字'}}
-    </view>
+    <view class="record-mic">🎤</view>
+    <view class="record-hint">松开发送</view>
   </view>
 
   <!-- 全屏编辑弹窗 -->

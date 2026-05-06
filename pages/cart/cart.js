@@ -3,6 +3,7 @@ const cartStore = require('../../utils/cart-store')
 const { col, callFn } = require('../../utils/cloud')
 const { genOrderNo } = require('../../utils/time')
 const { ORDER_TEMPLATE_ID } = require('../../utils/constants')
+const { requireLogin } = require('../../utils/auth-guard')
 
 Page({
   data: {
@@ -66,6 +67,8 @@ Page({
     if (this.data.submitting) return
     const { foodItems, snackItems, totalCount, overallNote } = this.data
     if (totalCount === 0) return
+
+    if (!(await requireLogin('下单需要登录后才能使用，是否立即登录？'))) return
 
     // 请求订阅权限（必须在tap事件内调用）
     await this._requestSubscribe()

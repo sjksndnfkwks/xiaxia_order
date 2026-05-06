@@ -139,7 +139,7 @@ Page({
       success: res => {
         if (!res.confirm) return
         // 只清账号身份相关；保留购物车、弹窗已读等本地状态
-        wx.setStorageSync('needLogin', true)
+        // （只对当前会话生效，下次启动会再自动登录回微信账号）
         wx.removeStorageSync('testLogin')
         app.globalData.openid = null
         app.globalData.isAdmin = false
@@ -151,11 +151,20 @@ Page({
   },
 
   showLoginSheet() {
+    // 连点 5 次解锁测试账号入口（重置间隔 1.5s）
+    const now = Date.now()
+    if (!this._tapAt || now - this._tapAt > 1500) this._tapCount = 0
+    this._tapCount = (this._tapCount || 0) + 1
+    this._tapAt = now
+    const showTest = this._tapCount >= 5
+    if (showTest) this._tapCount = 0
+
+    const itemList = showTest ? ['用微信账号登录', '用测试账号登录'] : ['用微信账号登录']
     wx.showActionSheet({
-      itemList: ['用微信账号登录', '用测试账号登录'],
+      itemList,
       success: res => {
         if (res.tapIndex === 0) this.loginWechat()
-        else if (res.tapIndex === 1) this.loginTest()
+        else if (res.tapIndex === 1 && showTest) this.loginTest()
       }
     })
   },

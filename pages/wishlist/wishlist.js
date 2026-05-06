@@ -1,5 +1,6 @@
 const app = getApp()
 const { col, db, _ } = require('../../utils/cloud')
+const { requireLogin } = require('../../utils/auth-guard')
 
 Page({
   data: {
@@ -73,7 +74,8 @@ Page({
   noop() {},
 
   // 新增条目
-  addItem() {
+  async addItem() {
+    if (!(await requireLogin('添加想吃清单需要登录后才能使用，是否立即登录？'))) return
     this.setData({
       showForm: true,
       mode: 'addItem',
@@ -86,7 +88,8 @@ Page({
   },
 
   // 点击已有条目
-  openItem(e) {
+  async openItem(e) {
+    if (!(await requireLogin('给想吃清单打分需要登录后才能使用，是否立即登录？'))) return
     const item = e.currentTarget.dataset.item
     const myOpenid = app.globalData.openid
     const isCreator = item.creatorId === myOpenid

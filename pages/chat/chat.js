@@ -2,6 +2,7 @@ const app = getApp()
 const { db, uploadFile, callFn } = require('../../utils/cloud')
 const { EMOJI_LIST } = require('../../utils/constants')
 const { formatChatTime } = require('../../utils/time')
+const { requireLogin } = require('../../utils/auth-guard')
 
 Page({
   data: {
@@ -29,7 +30,6 @@ Page({
     showFullscreenBtn: false,
     fullscreenEdit: false,
     fullscreenInput: '',
-    recordMode: 'send',
     // 管理员侧边栏
     isAdmin: false,
     sidebarOpen: false,
@@ -44,10 +44,6 @@ Page({
   _watcher: null,
   _recorder: null,
   _cancelled: false,
-  _textBtnRect: null,
-  _sendBtnRect: null,
-  _siManager: null,
-  _siResultText: '',
 
   async onLoad() {
     await app.waitLogin()
@@ -73,14 +69,40 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2, hidden: false })
     }
-    const latestAvatar = app.globalData.userInfo?.avatarUrl || ''
+    const { openid, isAdmin, userInfo } = app.globalData
+    const latestAvatar = userInfo?.avatarUrl || ''
+
+    // 账号切换：openid 或 isAdmin 变了，重置整个聊天页状态
+    if (openid !== this.data.myOpenid || !!isAdmin !== this.data.isAdmin) {
+      this._closeWatch()
+      this.setData({
+        myOpenid: openid || '',
+        myAvatar: latestAvatar,
+        isAdmin: !!isAdmin,
+        sidebarOpen: !!isAdmin,
+        currentUserId: isAdmin ? '' : (openid || ''),
+        currentContact: null,
+        peerAvatar: this.data.adminAvatar,
+        messages: [],
+        contacts: [],
+        multiSelect: false,
+        selectedIds: []
+      })
+      if (isAdmin) {
+        this._loadContacts()
+      } else if (openid) {
+        this._startWatch()
+      }
+      return
+    }
+
     if (latestAvatar !== this.data.myAvatar) {
       this.setData({ myAvatar: latestAvatar })
     }
-    if (app.globalData.isAdmin) {
+    if (isAdmin) {
       this._loadContacts()
       if (this.data.currentUserId && !this._watcher) this._startWatch()
-    } else if (!this._watcher && app.globalData.openid) {
+    } else if (!this._watcher && openid) {
       this._startWatch()
     }
   },
@@ -308,10 +330,11 @@ Page({
 
   async _sendMsg(data) {
     const isAdmin = app.globalData.isAdmin
+    if (!isAdmin && !(await requireLogin('发送消息需要登录后才能使用，是否立即登录？'))) return
     const myOpenid = app.globalData.openid
     const targetUserId = isAdmin ? this.data.currentUserId : myOpenid
     if (!targetUserId) {
-      wx.showToast({ title: '请先选择联系人', icon: 'none' })
+      wx.showToast({ title: isAdmin ? '请先选择联系人' : '登录失败', icon: 'none' })
       return
     }
     const conversationId = `conv_${targetUserId}`
@@ -431,82 +454,19 @@ Page({
     this.setData({ showExtra: !this.data.showExtra, showEmoji: false })
   },
 
-  _getSiManager() {
-    if (this._siManager) return this._siManager
-    try {
-      const plugin = requirePlugin('WechatSI')
-      const mgr = plugin.getRecordRecognitionManager()
-      mgr.onRecognize(res => {
-        this._siResultText = res.result || this._siResultText
-      })
-      mgr.onStop(res => {
-        this._siResultText = res.result || this._siResultText
-        this._handleRecordStop({ tempFilePath: res.tempFilePath, duration: res.duration })
-      })
-      mgr.onError(() => {
-        this._siResultText = ''
-        wx.hideLoading()
-        this.setData({ recording: false, recordMode: 'send' })
-      })
-      this._siManager = mgr
-      return mgr
-    } catch (e) {
-      return null
-    }
-  },
-
   startRecord() {
     this._cancelled = false
-    this._siResultText = ''
-    this.setData({ recordMode: 'send' })
-
-    const si = this._getSiManager()
-    if (si) {
-      this._recorder = { _isSi: true, stop: () => si.stop() }
-      si.start({ duration: 60000, lang: 'zh_CN' })
-      this.setData({ recording: true })
-    } else {
-      const rm = wx.getRecorderManager()
-      this._recorder = rm
-      rm.start({ format: 'aac', duration: 60000 })
-      rm.onStart(() => this.setData({ recording: true }))
-      rm.onStop(res => {
-        this._handleRecordStop({ tempFilePath: res.tempFilePath, duration: res.duration })
-      })
-    }
-
-    setTimeout(() => {
-      const q = wx.createSelectorQuery().in(this)
-      q.select('.record-action-text').boundingClientRect()
-      q.select('.record-action-send').boundingClientRect()
-      q.exec(rects => {
-        this._textBtnRect = rects[0]
-        this._sendBtnRect = rects[1]
-      })
-    }, 80)
+    const rm = wx.getRecorderManager()
+    this._recorder = rm
+    rm.start({ format: 'aac', duration: 60000 })
+    rm.onStart(() => this.setData({ recording: true }))
+    rm.onStop(res => {
+      this._handleRecordStop({ tempFilePath: res.tempFilePath, duration: res.duration })
+    })
   },
 
-  onRecordMove(e) {
-    if (!this.data.recording) return
-    const t = e.touches && e.touches[0]
-    if (!t) return
-    const x = t.clientX, y = t.clientY
-    const inRect = (r) => r && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom
-    let mode = 'send'
-    if (inRect(this._textBtnRect)) mode = 'text'
-    else if (inRect(this._sendBtnRect)) mode = 'send'
-    if (mode !== this.data.recordMode) this.setData({ recordMode: mode })
-  },
-
-  stopRecord(e) {
+  stopRecord() {
     if (!this._recorder) return
-    // 用松手时的坐标兜底判断模式（PC 端 touchmove 不一定连续触发）
-    const t = e && e.changedTouches && e.changedTouches[0]
-    if (t) {
-      const inRect = (r) => r && t.clientX >= r.left && t.clientX <= r.right && t.clientY >= r.top && t.clientY <= r.bottom
-      if (inRect(this._textBtnRect)) this.setData({ recordMode: 'text' })
-      else if (inRect(this._sendBtnRect)) this.setData({ recordMode: 'send' })
-    }
     this._cancelled = false
     this._recorder.stop()
   },
@@ -515,26 +475,12 @@ Page({
     if (!this._recorder) return
     this._cancelled = true
     this._recorder.stop()
-    this.setData({ recording: false, recordMode: 'send' })
+    this.setData({ recording: false })
   },
 
   async _handleRecordStop(res) {
-    const mode = this.data.recordMode
-    this.setData({ recording: false, recordMode: 'send' })
+    this.setData({ recording: false })
     if (this._cancelled || !res || !res.tempFilePath) return
-
-    if (mode === 'text') {
-      const text = (this._siResultText || '').trim()
-      if (text) {
-        this.setData({ inputText: (this.data.inputText || '') + text })
-      } else {
-        wx.showToast({
-          title: this._siManager ? '未识别到内容' : '请先开通同声传译插件',
-          icon: 'none'
-        })
-      }
-      return
-    }
 
     wx.showLoading({ title: '发送中...' })
     try {

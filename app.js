@@ -24,14 +24,10 @@ App({
     cartStore.restore()
 
     // 3. 登录策略：
-    //    - 退出后(needLogin)：不自动登录，等用户在"我的"页主动登录
     //    - 测试账号：使用本地虚拟身份
-    //    - 否则：正常调用 login 云函数
-    if (wx.getStorageSync('needLogin')) {
-      this.globalData.loginReady = true
-      this.globalData.loginCallbacks.forEach(cb => cb({}))
-      this.globalData.loginCallbacks = []
-    } else if (wx.getStorageSync('testLogin')) {
+    //    - 否则：自动调用 login 云函数（退出账号只对当前会话生效，下次启动会再自动登录）
+    wx.removeStorageSync('needLogin')
+    if (wx.getStorageSync('testLogin')) {
       this.applyTestLogin()
     } else {
       this._doLogin()
@@ -58,7 +54,6 @@ App({
   },
 
   relogin() {
-    wx.removeStorageSync('needLogin')
     wx.removeStorageSync('testLogin')
     this.globalData.loginReady = false
     return new Promise((resolve, reject) => {
