@@ -15,6 +15,13 @@ Component({
   observers: {
     'note': function(note) {
       this.setData({ noteValue: note || '' })
+    },
+    'show': function(show) {
+      const pages = getCurrentPages()
+      const page = pages[pages.length - 1]
+      if (!page || typeof page.getTabBar !== 'function') return
+      const tb = page.getTabBar()
+      if (tb) tb.setData({ hidden: !!show })
     }
   },
 

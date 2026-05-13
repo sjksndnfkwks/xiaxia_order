@@ -26,7 +26,7 @@ exports.main = async (event, context) => {
       templateId: CHAT_TEMPLATE_ID,
       page: 'pages/admin/admin-home/admin-home',
       data: {
-        thing1: { value: (senderName || '虾虾').substring(0, 20) },
+        thing1: { value: (senderName || '新朋友').substring(0, 20) },
         thing2: { value: (messagePreview || '发来了一条消息').substring(0, 20) }
       }
     })

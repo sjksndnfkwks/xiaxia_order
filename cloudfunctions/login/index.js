@@ -24,14 +24,14 @@ exports.main = async (event, context) => {
         data: {
           _openid: OPENID,
           openid: OPENID,
-          nickName: '虾虾',
+          nickName: '',
           avatarUrl: '',
           isAdmin,
           createdAt: now,
           lastActiveAt: now
         }
       })
-      userInfo = { openid: OPENID, nickName: '虾虾', avatarUrl: '', isAdmin }
+      userInfo = { openid: OPENID, nickName: '', avatarUrl: '', isAdmin }
     } else {
       userInfo = res.data[0]
       const patch = { lastActiveAt: now, isAdmin }

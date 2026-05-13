@@ -1,7 +1,7 @@
 {
   "appid": "wx52120b63d74b6190",
-  "projectname": "虾虾的626小食堂",
-  "description": "只属于虾虾的专属小食堂，点菜、买零食、给老公发消息，还有专属惊喜等着你。",
+  "projectname": "repeat的食堂",
+  "description": "私人点菜小食堂：点菜、买零食、聊天、纪念日惊喜。",
   "setting": {
     "urlCheck": true,
     "es6": true,

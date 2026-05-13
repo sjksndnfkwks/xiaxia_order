@@ -337,6 +337,18 @@ Page({
       wx.showToast({ title: isAdmin ? '请先选择联系人' : '登录失败', icon: 'none' })
       return
     }
+    if (!isAdmin) {
+      const nick = app.globalData.userInfo && app.globalData.userInfo.nickName
+      if (!nick) {
+        wx.showModal({
+          title: '请先完善资料',
+          content: '请先到「我的」页设置头像和昵称后再发送消息',
+          confirmText: '去设置',
+          success: r => { if (r.confirm) wx.switchTab({ url: '/pages/profile/profile' }) }
+        })
+        return
+      }
+    }
     const conversationId = `conv_${targetUserId}`
 
     const msgData = {
@@ -363,7 +375,7 @@ Page({
     if (!isAdmin) {
       callFn('sendChatNotify', {
         messagePreview: preview.substring(0, 20),
-        senderName: app.globalData.userInfo?.nickName || '虾虾'
+        senderName: app.globalData.userInfo?.nickName || '新朋友'
       }).catch(() => {})
     }
   },

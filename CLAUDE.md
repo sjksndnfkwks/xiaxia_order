@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-WeChat mini-program (微信小程序) "虾虾的626小食堂" — personal food-ordering app. Native WXML/WXSS/JS on the frontend, WeChat Cloud (wx.cloud) for all backend. No npm build step and no traditional test runner: development happens inside 微信开发者工具 (WeChat Developer Tools).
+WeChat mini-program (微信小程序) "repeat的食堂" — personal food-ordering app. Native WXML/WXSS/JS on the frontend, WeChat Cloud (wx.cloud) for all backend. No npm build step and no traditional test runner: development happens inside 微信开发者工具 (WeChat Developer Tools).
 
 ## Running and deploying
 
