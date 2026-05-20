@@ -113,10 +113,18 @@ Component({
         wx.cloud.getTempFileURL({ fileList: [url] })
           .then(res => {
             const f = res.fileList && res.fileList[0]
-            if (f && f.tempFileURL) start(f.tempFileURL)
-            else wx.showToast({ title: '语音加载失败', icon: 'none' })
+            if (f && f.tempFileURL) {
+              start(f.tempFileURL)
+            } else {
+              // 多为云存储权限问题（非创建者无读权限）：控制台需设“所有用户可读”
+              console.error('getTempFileURL no url', f)
+              wx.showToast({ title: '语音加载失败', icon: 'none' })
+            }
           })
-          .catch(() => wx.showToast({ title: '语音加载失败', icon: 'none' }))
+          .catch(err => {
+            console.error('getTempFileURL error', err)
+            wx.showToast({ title: '语音加载失败', icon: 'none' })
+          })
       } else {
         start(url)
       }
