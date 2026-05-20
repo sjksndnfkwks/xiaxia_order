@@ -2,8 +2,8 @@
 const CLOUD_ENV = 'cloud1-d8g3zvekkc85a5d79'
 
 // 订阅消息模板ID（在微信公众平台申请后填入）
-const ORDER_TEMPLATE_ID = 'YOUR_ORDER_TEMPLATE_ID'
-const CHAT_TEMPLATE_ID = 'YOUR_CHAT_TEMPLATE_ID'
+const ORDER_TEMPLATE_ID = 'o5FygjH70JJ-atVo0quL7ttEcDF6ENZz_YbcNo27HNk'
+const CHAT_TEMPLATE_ID = 'vHFVvCN3I76SvvyL2_hlsLjkACQNtoc9iTGwiTUrVdo'
 
 // 订单状态
 const ORDER_STATUS = {

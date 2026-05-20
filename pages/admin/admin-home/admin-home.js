@@ -1,5 +1,5 @@
 const app = getApp()
-const { col, db } = require('../../../utils/cloud')
+const { col, db, callFn } = require('../../../utils/cloud')
 const { ORDER_TEMPLATE_ID, CHAT_TEMPLATE_ID } = require('../../../utils/constants')
 
 Page({
@@ -27,19 +27,16 @@ Page({
   async _loadStats() {
     try {
       const _ = db.command
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-
-      const [pendingRes, todayRes, msgRes] = await Promise.all([
-        col('orders').where({ status: 'pending' }).count(),
-        col('orders').where({ createdAt: _.gte(today) }).count(),
-        col('conversations').where({ unreadByAdmin: _.gt(0) }).get()
+      // 订单统计走云函数，绕过安全规则才能统计到所有用户的订单
+      const [orderStats, msgRes] = await Promise.all([
+        callFn('adminOrders', { action: 'stats' }).catch(() => null),
+        col('conversations').where({ unreadByAdmin: _.gt(0) }).get().catch(() => ({ data: [] }))
       ])
 
       const unreadMsgCount = msgRes.data.reduce((s, c) => s + (c.unreadByAdmin || 0), 0)
       this.setData({
-        pendingCount: pendingRes.total,
-        todayOrderCount: todayRes.total,
+        pendingCount: orderStats ? orderStats.unseenCount : 0,
+        todayOrderCount: orderStats ? orderStats.todayCount : 0,
         unreadMsgCount
       })
     } catch (e) {

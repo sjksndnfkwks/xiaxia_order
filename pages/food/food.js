@@ -107,6 +107,8 @@ Page({
   },
 
   onFoodScroll(e) {
+    // 点击索引触发的程序化滚动期间，不让滚动监听抢回高亮
+    if (this._navLock) return
     const scrollTop = e.detail.scrollTop
     // 重新查询各section位置（相对于视口）
     const { categories } = this.data
@@ -127,7 +129,11 @@ Page({
 
   scrollToCategory(e) {
     const id = e.currentTarget.dataset.id
-    this.setData({ activeCat: id, scrollTarget: `section-${id}` })
+    // 加锁：滚动动画期间屏蔽 onFoodScroll 的高亮重算，避免高亮被抢回旧分类
+    this._navLock = true
+    if (this._navLockTimer) clearTimeout(this._navLockTimer)
+    this._navLockTimer = setTimeout(() => { this._navLock = false }, 500)
+    this.setData({ activeCat: id, activeCatId: `cat-nav-${id}`, scrollTarget: `section-${id}` })
   },
 
   onSearch(e) {

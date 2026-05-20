@@ -24,14 +24,24 @@ App({
     cartStore.restore()
 
     // 3. 登录策略：
+    //    - 上次主动退出：保持退出态，不自动登录
     //    - 测试账号：使用本地虚拟身份
-    //    - 否则：自动调用 login 云函数（退出账号只对当前会话生效，下次启动会再自动登录）
+    //    - 否则：自动调用 login 云函数
     wx.removeStorageSync('needLogin')
-    if (wx.getStorageSync('testLogin')) {
+    if (wx.getStorageSync('loggedOut')) {
+      this._markLoginReady()
+    } else if (wx.getStorageSync('testLogin')) {
       this.applyTestLogin()
     } else {
       this._doLogin()
     }
+  },
+
+  // 标记登录流程已结束（无身份），让等待中的页面以未登录态渲染
+  _markLoginReady() {
+    this.globalData.loginReady = true
+    this.globalData.loginCallbacks.forEach(cb => cb({ openid: null, isAdmin: false }))
+    this.globalData.loginCallbacks = []
   },
 
   isLoggedIn() {
@@ -39,6 +49,7 @@ App({
   },
 
   applyTestLogin() {
+    wx.removeStorageSync('loggedOut')
     this.globalData.openid = 'test_user_001'
     this.globalData.isAdmin = false
     this.globalData.userInfo = {
@@ -55,6 +66,7 @@ App({
 
   relogin() {
     wx.removeStorageSync('testLogin')
+    wx.removeStorageSync('loggedOut')
     this.globalData.loginReady = false
     return new Promise((resolve, reject) => {
       this._doLogin(resolve, reject)

@@ -128,13 +128,16 @@ Page({
       }
       const contacts = convs.map(c => {
         const u = userMap[c.userId] || {}
+        // 优先用会话里快照的头像/昵称（管理员读不到别人的 users 记录），users 仅作兜底
+        const nickName = c.userNickName || u.nickName || '微信用户'
+        const avatarUrl = c.userAvatar || u.avatarUrl || '/assets/images/stitch-wave.png'
         return {
           userId: c.userId,
           convId: c._id,
-          nickName: u.nickName || '微信用户',
-          avatarUrl: u.avatarUrl || '/assets/images/stitch-wave.png',
+          nickName,
+          avatarUrl,
           remark: c.adminRemark || '',
-          displayName: c.adminRemark || u.nickName || '微信用户',
+          displayName: c.adminRemark || nickName,
           lastMessage: c.lastMessage || '',
           lastTimeStr: c.lastMessageAt ? formatChatTime(c.lastMessageAt) : '',
           unread: c.unreadByAdmin || 0
@@ -350,11 +353,16 @@ Page({
       }
     }
     const conversationId = `conv_${targetUserId}`
+    const myInfo = app.globalData.userInfo || {}
 
     const msgData = {
       conversationId,
       senderId: myOpenid,
       senderRole: isAdmin ? 'admin' : 'user',
+      // 快照发送者头像/昵称：管理员读不到别人的 users 记录（安全规则），
+      // 把头像随消息一起存，对方才能正确显示
+      senderName: myInfo.nickName || '',
+      senderAvatar: myInfo.avatarUrl || '',
       createdAt: db.serverDate(),
       recalled: false,
       ...data
@@ -369,7 +377,12 @@ Page({
       lastMessageAt: db.serverDate(),
       createdAt: db.serverDate()
     }
-    if (!isAdmin) convData.unreadByAdmin = db.command.inc(1)
+    if (!isAdmin) {
+      convData.unreadByAdmin = db.command.inc(1)
+      // 把用户头像/昵称写入会话，管理员侧联系人列表/标题才能显示
+      convData.userNickName = myInfo.nickName || ''
+      convData.userAvatar = myInfo.avatarUrl || ''
+    }
     db.collection('conversations').doc(conversationId).set({ data: convData }).catch(() => {})
 
     if (!isAdmin) {
@@ -466,33 +479,57 @@ Page({
     this.setData({ showExtra: !this.data.showExtra, showEmoji: false })
   },
 
-  startRecord() {
-    this._cancelled = false
+  _initRecorder() {
+    if (this._recorder) return this._recorder
     const rm = wx.getRecorderManager()
-    this._recorder = rm
-    rm.start({ format: 'aac', duration: 60000 })
-    rm.onStart(() => this.setData({ recording: true }))
+    rm.onStart(() => {
+      this._recording = true
+      this.setData({ recording: true })
+      // 录音真正启动前用户已松手：立即停止
+      if (this._stopRequested) rm.stop()
+    })
     rm.onStop(res => {
+      this._recording = false
       this._handleRecordStop({ tempFilePath: res.tempFilePath, duration: res.duration })
     })
+    rm.onError(err => {
+      console.error('recorder error', err)
+      this._recording = false
+      this.setData({ recording: false })
+      wx.showToast({ title: '录音失败', icon: 'none' })
+    })
+    this._recorder = rm
+    return rm
+  },
+
+  startRecord() {
+    this._cancelled = false
+    this._stopRequested = false
+    const rm = this._initRecorder()
+    rm.start({ format: 'aac', duration: 60000 })
   },
 
   stopRecord() {
-    if (!this._recorder) return
+    this._stopRequested = true
     this._cancelled = false
-    this._recorder.stop()
+    // 已在录音才能 stop；否则交给 onStart 里的 _stopRequested 处理
+    if (this._recorder && this._recording) this._recorder.stop()
   },
 
   cancelRecord() {
-    if (!this._recorder) return
+    this._stopRequested = true
     this._cancelled = true
-    this._recorder.stop()
+    if (this._recorder && this._recording) this._recorder.stop()
     this.setData({ recording: false })
   },
 
   async _handleRecordStop(res) {
     this.setData({ recording: false })
     if (this._cancelled || !res || !res.tempFilePath) return
+    if ((res.duration || 0) < 1000) {
+      wx.showToast({ title: '说话时间太短', icon: 'none' })
+      return
+    }
 
     wx.showLoading({ title: '发送中...' })
     try {

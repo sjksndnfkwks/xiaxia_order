@@ -43,8 +43,8 @@
       </view>
 
       <!-- 图片 -->
-      <view class="bubble img-bubble" wx:elif="{{msg.type === 'image'}}" bindtap="previewImg">
-        <image src="{{msg.mediaUrl}}" mode="aspectFill" class="msg-img" />
+      <view class="bubble img-bubble" wx:elif="{{msg.type === 'image'}}" bindtap="previewImg" style="{{imgStyle}}">
+        <image src="{{msg.mediaUrl}}" mode="aspectFit" class="msg-img" style="{{imgStyle}}" bindload="onImgLoad" />
       </view>
 
       <!-- 视频 -->

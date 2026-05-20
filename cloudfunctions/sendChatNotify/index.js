@@ -3,7 +3,7 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 
 const ADMIN_OPENID = process.env.ADMIN_OPENID || 'oHapF3TKIHD3JVk60hVXugsUpHGM'
-const CHAT_TEMPLATE_ID = process.env.CHAT_TEMPLATE_ID || 'YOUR_CHAT_TEMPLATE_ID'
+const CHAT_TEMPLATE_ID = process.env.CHAT_TEMPLATE_ID || 'vHFVvCN3I76SvvyL2_hlsLjkACQNtoc9iTGwiTUrVdo'
 
 exports.main = async (event, context) => {
   const { messagePreview, senderName } = event

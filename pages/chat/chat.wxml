@@ -87,7 +87,7 @@
         id="msg-{{item._id}}"
         msg="{{item}}"
         isSelf="{{item.senderId === myOpenid}}"
-        avatarUrl="{{item.senderId === myOpenid ? myAvatar : peerAvatar}}"
+        avatarUrl="{{item.senderId === myOpenid ? myAvatar : (item.senderAvatar || peerAvatar)}}"
         multiSelect="{{multiSelect}}"
         selected="{{item.selected}}"
         bind:longpress="onBubbleLongPress"

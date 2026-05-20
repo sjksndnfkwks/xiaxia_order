@@ -2,7 +2,6 @@ const app = getApp()
 const cartStore = require('../../utils/cart-store')
 const { col, callFn } = require('../../utils/cloud')
 const { genOrderNo } = require('../../utils/time')
-const { ORDER_TEMPLATE_ID } = require('../../utils/constants')
 const { requireLogin } = require('../../utils/auth-guard')
 
 Page({
@@ -70,9 +69,6 @@ Page({
 
     if (!(await requireLogin('下单需要登录后才能使用，是否立即登录？'))) return
 
-    // 请求订阅权限（必须在tap事件内调用）
-    await this._requestSubscribe()
-
     this.setData({ submitting: true })
 
     try {
@@ -116,7 +112,10 @@ Page({
       this._updateSoldCount(foodItems.concat(snackItems))
 
       // 推送通知给管理员
-      callFn('sendOrderNotify', { orderNo, totalCount, overallNote: overallNote.trim() })
+      const names = foodItems.concat(snackItems).map(i => i.name)
+      let content = names.slice(0, 2).join('、')
+      if (names.length > 2) content += `等${names.length}样`
+      callFn('sendOrderNotify', { orderNo, content, overallNote: overallNote.trim() })
         .catch(e => console.warn('notify failed', e))
 
       // 清空购物车
@@ -129,17 +128,6 @@ Page({
       wx.showToast({ title: '下单失败，请重试', icon: 'none' })
       this.setData({ submitting: false })
     }
-  },
-
-  _requestSubscribe() {
-    return new Promise(resolve => {
-      const tmplIds = [ORDER_TEMPLATE_ID].filter(id => id && !id.startsWith('YOUR_'))
-      if (tmplIds.length === 0) { resolve(); return }
-      wx.requestSubscribeMessage({
-        tmplIds,
-        complete: () => resolve()
-      })
-    })
   },
 
   _updateSoldCount(items) {

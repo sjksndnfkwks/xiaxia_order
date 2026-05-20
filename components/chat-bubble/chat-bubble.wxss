@@ -186,6 +186,7 @@
   width: 320rpx;
   height: 240rpx;
   display: block;
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .video-bubble {

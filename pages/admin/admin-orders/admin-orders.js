@@ -1,5 +1,5 @@
 const app = getApp()
-const { col, db } = require('../../../utils/cloud')
+const { callFn } = require('../../../utils/cloud')
 const { formatOrderTime } = require('../../../utils/time')
 const { ORDER_STATUS_TEXT } = require('../../../utils/constants')
 
@@ -7,15 +7,14 @@ Page({
   data: {
     loading: true,
     orders: [],
-    activeFilter: 'pending',
+    activeFilter: '',
     expandedId: null,
     statusText: ORDER_STATUS_TEXT,
     filters: [
-      { val: 'pending', label: '待确认' },
-      { val: 'confirmed', label: '已确认' },
+      { val: '', label: '全部' },
       { val: 'done', label: '已完成' },
-      { val: 'cancelled', label: '已取消' },
-      { val: '', label: '全部' }
+      { val: 'confirmed', label: '已确认' },
+      { val: 'cancelled', label: '已取消' }
     ]
   },
 
@@ -33,12 +32,9 @@ Page({
     this.setData({ loading: true })
     const { activeFilter } = this.data
     try {
-      let query = col('orders').orderBy('createdAt', 'desc').limit(50)
-      if (activeFilter) {
-        query = col('orders').where({ status: activeFilter }).orderBy('createdAt', 'desc').limit(50)
-      }
-      const res = await query.get()
-      const orders = res.data.map(o => ({
+      const res = await callFn('adminOrders', { action: 'list', status: activeFilter })
+      const list = (res && res.orders) || []
+      const orders = list.map(o => ({
         ...o,
         createdAtStr: o.createdAt ? formatOrderTime(o.createdAt) : ''
       }))
@@ -61,7 +57,7 @@ Page({
   },
 
   async _updateStatus(id, status) {
-    await col('orders').doc(id).update({ data: { status, updatedAt: db.serverDate(), adminSeen: true } })
+    await callFn('adminOrders', { action: 'updateStatus', orderId: id, newStatus: status })
     this._loadOrders()
   },
 

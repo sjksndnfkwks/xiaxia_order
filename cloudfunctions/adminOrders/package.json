@@ -1,0 +1,9 @@
+{
+  "name": "adminOrders",
+  "version": "1.0.0",
+  "description": "管理员订单管理：服务端读取/更新所有用户订单，绕过安全规则",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

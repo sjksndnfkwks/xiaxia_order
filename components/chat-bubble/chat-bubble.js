@@ -12,7 +12,8 @@ Component({
   data: {
     timeStr: '',
     playing: false,
-    voiceWidth: 160
+    voiceWidth: 160,
+    imgStyle: ''
   },
 
   observers: {
@@ -67,6 +68,20 @@ Component({
       wx.previewImage({ urls: [url], current: url })
     },
 
+    // 按图片真实比例计算显示框，避免裁剪
+    onImgLoad(e) {
+      const { width, height } = e.detail
+      if (!width || !height) return
+      const maxW = 320, maxH = 320, minSide = 100
+      const ratio = width / height
+      let w = width, h = height
+      if (w > maxW) { w = maxW; h = Math.round(w / ratio) }
+      if (h > maxH) { h = maxH; w = Math.round(h * ratio) }
+      w = Math.max(w, minSide)
+      h = Math.max(h, minSide)
+      this.setData({ imgStyle: `width:${Math.round(w)}rpx;height:${Math.round(h)}rpx;` })
+    },
+
     openMerged() {
       if (this.properties.multiSelect) return
       this.triggerEvent('openmerged', { msg: this.properties.msg })
@@ -74,14 +89,37 @@ Component({
 
     playVoice() {
       if (this.properties.multiSelect) return
+      if (this.data.playing) return
       const url = this.properties.msg.mediaUrl
       if (!url) return
-      this.setData({ playing: true })
-      const audio = wx.createInnerAudioContext()
-      audio.src = url
-      audio.play()
-      audio.onEnded(() => this.setData({ playing: false }))
-      audio.onError(() => this.setData({ playing: false }))
+
+      const start = (src) => {
+        this.setData({ playing: true })
+        const audio = wx.createInnerAudioContext()
+        this._audio = audio
+        audio.src = src
+        audio.play()
+        audio.onEnded(() => { this.setData({ playing: false }); audio.destroy() })
+        audio.onError(err => {
+          console.error('voice play error', err)
+          this.setData({ playing: false })
+          audio.destroy()
+          wx.showToast({ title: '语音播放失败', icon: 'none' })
+        })
+      }
+
+      // InnerAudioContext 不支持 cloud:// 文件ID，需先换成 https 临时链接
+      if (/^cloud:\/\//.test(url)) {
+        wx.cloud.getTempFileURL({ fileList: [url] })
+          .then(res => {
+            const f = res.fileList && res.fileList[0]
+            if (f && f.tempFileURL) start(f.tempFileURL)
+            else wx.showToast({ title: '语音加载失败', icon: 'none' })
+          })
+          .catch(() => wx.showToast({ title: '语音加载失败', icon: 'none' }))
+      } else {
+        start(url)
+      }
     }
   }
 })

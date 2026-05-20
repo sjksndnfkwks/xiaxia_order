@@ -139,8 +139,9 @@ Page({
       success: res => {
         if (!res.confirm) return
         // 只清账号身份相关；保留购物车、弹窗已读等本地状态
-        // （只对当前会话生效，下次启动会再自动登录回微信账号）
+        // 持久化退出态：下次启动/重新进入小程序不再自动登录，直到主动登录
         wx.removeStorageSync('testLogin')
+        wx.setStorageSync('loggedOut', true)
         app.globalData.openid = null
         app.globalData.isAdmin = false
         app.globalData.userInfo = null
